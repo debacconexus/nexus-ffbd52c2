@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIRS Nexus — Governed Data System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+/* === AIRS COLOR SYSTEM v1 — FINAL === */
+:root{
+  --hd-blue: #2563EB;
+  --hd-green: #059669;
+  --hd-gold: #D97706;
+  --hd-coral: #DC2626;
+  --hd-violet: #7C3AED;
+  --hd-bg: #FFFFFF;
+  --hd-card: #FFFFFF;
+  --hd-text: #0F172A;
+  --hd-text2: #475569;
+  --hd-border: rgba(15,23,42,.08);
+}
+@supports not (color: color(display-p3 0 0 0)){
+  :root{
+    --hd-blue: #2563EB;
+    --hd-green: #059669;
+    --hd-gold: #D97706;
+    --hd-coral: #EF4444;
+    --hd-violet: #8B5CF6;
+  }
+}
+*{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+body{background:var(--hd-bg)!important;color:var(--hd-text)!important}
+.card,.story-card,.record-card{background:var(--hd-card)!important;border-color:var(--hd-border)!important;box-shadow:0 1px 3px rgba(15,23,42,.06),0 1px 2px rgba(15,23,42,.04)!important}
+.nav-btn.active{background:var(--hd-blue)!important;color:#fff!important}
+.btn-primary{background:var(--hd-blue)!important;color:#fff!important}
+.card-title,.record-field-label{color:var(--hd-text)!important}
+.card-header{border-color:var(--hd-border)!important}
+.igm-badge{background:var(--hd-green)!important;color:#fff!important}
+.gov-badge{background:var(--hd-green)!important;color:#fff!important}
+.status-badge.status-active{background:rgba(16,185,129,.12)!important;color:var(--hd-green)!important}
+.status-badge.status-completed{background:rgba(59,130,246,.12)!important;color:var(--hd-blue)!important}
+.status-badge.status-pending{background:rgba(245,158,11,.12)!important;color:var(--hd-gold)!important}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FFFFFF;--bg2:#FFFFFF;--bg3:#FFFFFF;--bg4:#FFFFFF;
+  --border:rgba(2,136,209,.35);--border2:rgba(2,136,209,.55);
+  --text:#0F172A;--text2:#2563EB;--text3:#475569;
+  --gold:#D97706;--gold2:#92400E;
+  --teal:#059669;--teal2:#059669;
+  --cyan:#2563EB;--cyan2:#1E40AF;
+  --coral:#EF4444;--violet:#8B5CF6;
+  --green:#10B981;--green2:#059669;
+  --shadow:0 4px 24px rgba(30,60,100,.12);--radius:12px;
+}
+body{font-family:'Inter',sans-serif;font-size:15px;background:#FFFFFF;color:var(--text);line-height:1.5;min-height:100vh;overflow-x:hidden}
+.header{background:linear-gradient(180deg,#FFFFFF,#ffffff);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:100;box-shadow:0 2px 12px rgba(0,40,80,.08)}
+.header-left{display:flex;align-items:center;gap:16px}
+.logo{font-size:22px;font-weight:800;color:var(--hd-text);display:flex;align-items:center;gap:8px;cursor:pointer}
+.logo-star{color:var(--gold)}
+.logo-sub{font-size:11px;color:var(--hd-text);font-family:'IBM Plex Mono',monospace;letter-spacing:.3px;margin-top:1px}
+.igm-bar{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--hd-text);display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-left:1px solid var(--border);padding-left:16px}
+.igm-governed{color:var(--teal);font-weight:700}
+.igm-val{color:var(--gold);font-weight:600}
+.header-right{display:flex;align-items:center;gap:8px}
+.hbtn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;border:1px solid var(--border2);background:rgba(98,200,255,.08);color:var(--hd-text);transition:all .2s}
+.hbtn:hover{background:rgba(98,200,255,.15);color:var(--text)}
+.hbtn.demo{background:#D1FAE5;border-color:#059669;color:#059669}
+.demo-overlay{display:none;position:fixed;inset:0;background:rgba(4,10,20,.85);z-index:300;align-items:center;justify-content:center;padding:24px}
+.demo-overlay.show{display:flex}
+.demo-modal{background:#FFFFFF;border:1px solid rgba(74,222,128,.35);border-radius:16px;max-width:680px;width:100%;max-height:85vh;overflow-y:auto;padding:32px;box-shadow:0 8px 48px rgba(0,0,0,.6)}
+.demo-modal h2{font-size:24px;font-weight:800;color:var(--green);margin-bottom:6px;letter-spacing:-.02em}
+.demo-sub{font-size:13px;color:var(--hd-text);font-family:'IBM Plex Mono',monospace;margin-bottom:20px}
+.demo-section{margin-bottom:20px}
+.demo-label{font-size:12px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px}
+.demo-text{font-size:15px;color:var(--text);line-height:1.7}
+.demo-chips{display:flex;flex-wrap:wrap;gap:8px}
+.demo-chip{font-size:13px;font-weight:600;padding:6px 14px;border-radius:8px;border:1px solid var(--border2);color:var(--text);background:#F8FAFC}
+.demo-step{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:#F8FAFC;cursor:pointer;width:100%;text-align:left;font-family:inherit}
+.demo-step:hover,.demo-step:focus{border-color:var(--green);outline:2px solid var(--green);outline-offset:1px}
+.demo-step-num{font-size:14px;font-weight:800;color:var(--gold);font-family:'IBM Plex Mono',monospace;min-width:22px}
+.demo-step-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px}
+.demo-step-desc{font-size:13px;color:var(--hd-text);line-height:1.5}
+.demo-close{background:#F8FAFC;border:1px solid var(--border2);color:var(--text);font-size:14px;font-weight:700;padding:10px 22px;border-radius:8px;cursor:pointer;margin-top:8px}
+.demo-close:hover,.demo-close:focus{border-color:var(--coral);color:var(--coral);outline:2px solid var(--coral)}
+.demo-igm{font-size:12px;color:var(--teal);font-family:'IBM Plex Mono',monospace;border-top:1px solid var(--border);padding-top:14px;margin-top:6px}
+.demo-action{background:linear-gradient(135deg,#059669,#059669);border:1px solid #10B981;color:#10B981;font-size:14px;font-weight:700;padding:10px 22px;border-radius:8px;cursor:pointer;margin:8px 8px 0 0}
+.demo-action:hover,.demo-action:focus{outline:2px solid var(--green)}
+.demo-action.clear{background:#F8FAFC;border-color:var(--border2);color:var(--hd-text)}
+.demo-action.clear:hover,.demo-action.clear:focus{border-color:var(--coral);color:var(--coral);outline:2px solid var(--coral)}
+
+
+.nav{width:220px;min-width:220px;background:#FFFFFF;border-right:1px solid var(--border);padding:20px 12px;position:fixed;top:60px;bottom:0;overflow-y:auto}
+.nav-section{font-size:10px;font-weight:700;color:#475569;letter-spacing:1.5px;text-transform:uppercase;padding:16px 8px 6px}
+.nav-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:none;background:transparent;color:var(--hd-text);font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;text-align:left;transition:all .2s;margin-bottom:2px}
+.nav-btn:hover{background:rgba(98,200,255,.08);color:var(--text)}
+.nav-btn.active{background:linear-gradient(135deg,rgba(51,224,196,.15),rgba(98,200,255,.1));color:var(--hd-text);border:1px solid rgba(51,224,196,.3);font-weight:600}
+.nav-icon{font-size:14px;width:20px;text-align:center}
+.nav-divider{border:none;border-top:1px solid var(--border);margin:8px 0}
+.layout{display:flex;padding-top:60px;min-height:100vh;width:100%}.main{margin-left:220px;flex:1;width:calc(100% - 220px);padding:28px;min-height:calc(100vh - 60px);box-sizing:border-box}
+.card{background:#FFFFFF;border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.card-title{font-size:13px;font-weight:700;color:var(--cyan);letter-spacing:1px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.igm-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;color:var(--teal);background:rgba(51,224,196,.1);border:1px solid rgba(51,224,196,.25);padding:2px 8px;border-radius:4px}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:#FFFFFF;border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.default::before{background:#2563EB}
+.stat-card.red::before{background:#FEE2E2}
+.stat-card.green::before{background:#059669}
+.stat-card.blue::before{background:#8B5CF6}
+.stat-num{font-size:42px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--hd-text);line-height:1}
+.stat-card.red .stat-num{color:var(--coral)}
+.stat-card.green .stat-num{color:var(--green)}
+.stat-card.blue .stat-num{color:var(--violet)}
+.stat-label{font-size:11px;color:var(--hd-text);margin-top:8px;letter-spacing:.5px;text-transform:uppercase;font-weight:600}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.chart-card{background:#FFFFFF;border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.chart-title{font-size:11px;font-weight:700;color:var(--hd-text);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px}
+.chart-wrap{position:relative;height:180px}
+.table-wrap{overflow-x:auto;border-radius:8px;border:1px solid var(--border)}
+.demo-watermark{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(90deg,#2563EB,#059669);color:#fff;text-align:center;padding:8px;font-size:11px;font-weight:700;letter-spacing:1px;z-index:9999;font-family:'IBM Plex Mono',monospace}
+.demo-watermark a{color:#D97706;text-decoration:none;margin-left:8px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+.pii-shield{position:relative;display:inline-block}
+.pii-shield::after{content:'IGM Protected';position:absolute;top:-8px;right:-6px;font-size:8px;background:#D1FAE5;color:#059669;padding:1px 5px;border-radius:4px;font-weight:700;letter-spacing:.3px;pointer-events:none}
+.pii-masked{color:var(--hd-text);background:rgba(60,200,160,.15);padding:2px 6px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:12px;border:1px solid rgba(60,200,160,.3)}
+.access-log{font-size:10px;color:#475569;font-family:'IBM Plex Mono',monospace;margin-top:4px}
+.about-panel{padding:32px;max-width:800px;margin:0 auto}
+.story-card{background:#FFFFFF;border:1px solid rgba(2,136,209,.2);border-radius:12px;padding:24px;margin-bottom:16px;transition:all .3s}
+.story-card:hover{border-color:#2563EB;transform:translateY(-2px)}
+.about-panel,.story-card,.consultant-card{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+.story-title{font-size:16px;font-weight:700;color:#2563EB;margin-bottom:8px}
+.story-subtitle{font-size:13px;color:#334155;font-style:italic;font-weight:500;margin-bottom:12px}
+.story-text{font-size:14px;color:#0F172A!important;line-height:1.8;font-weight:500}
+.story-badge{display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px}
+thead tr{background:rgba(98,200,255,.06);border-bottom:1px solid var(--border2)}
+th{padding:12px 14px;text-align:left;font-size:11px;font-weight:700;color:var(--hd-text);letter-spacing:.8px;text-transform:uppercase;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(98,200,255,.05)}
+td{padding:12px 14px;color:var(--text);font-size:13px}
+.status-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.status-active{background:rgba(74,222,128,.12);color:var(--green);border:1px solid rgba(74,222,128,.25)}
+.status-completed{background:rgba(98,200,255,.12);color:var(--cyan);border:1px solid rgba(98,200,255,.25)}
+.status-pending{background:rgba(255,202,88,.12);color:var(--gold);border:1px solid rgba(255,202,88,.25)}
+.status-inactive{background:rgba(255,133,119,.12);color:var(--coral);border:1px solid rgba(255,133,119,.25)}
+.filters{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filter-input{background:#F8FAFC;border:1px solid var(--border);border-radius:8px;padding:9px 14px;font-size:13px;color:var(--text);font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+.filter-input:focus{border-color:var(--cyan2)}
+.filter-input::placeholder{color:#475569}
+select.filter-input option{background:#FFFFFF;color:var(--text)}
+.btn{padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;border:none;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,var(--teal2),var(--cyan2));color:#fff}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+.btn-gold{background:linear-gradient(135deg,#2563EB,#2563EB);color:#ffffff}
+.btn-sm{padding:6px 14px;font-size:12px;border-radius:6px}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--hd-text)}
+.btn-ghost:hover{background:rgba(98,200,255,.08);color:var(--text)}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.form-grid.cols3{grid-template-columns:repeat(3,1fr)}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group.full{grid-column:1/-1}
+label{font-size:12px;font-weight:600;color:var(--hd-text);letter-spacing:.5px;text-transform:uppercase}
+.form-input{background:#F8FAFC;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--text);font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;width:100%}
+.form-input:focus{border-color:var(--cyan2)}
+.form-input::placeholder{color:#475569}
+select.form-input option{background:#FFFFFF;color:var(--text)}
+textarea.form-input{resize:vertical;min-height:100px}
+.home-hero{background:linear-gradient(135deg,#FFFFFF,#D1FAE5);border:1px solid rgba(0,100,205,.15);border-radius:16px;padding:36px;margin-bottom:28px}
+.home-nexus-name{font-size:32px;font-weight:800;color:var(--hd-text);margin-bottom:8px}
+.home-entity{font-size:13px;color:var(--hd-text);font-family:'IBM Plex Mono',monospace}
+.home-tier{display:inline-flex;align-items:center;background:rgba(51,224,196,.12);border:1px solid rgba(51,224,196,.3);color:var(--teal);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;font-family:'IBM Plex Mono',monospace;margin-left:12px;vertical-align:middle}
+.section-label{font-size:11px;font-weight:700;color:#475569;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px}
+.schema-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+.schema-card{background:#FFFFFF;border:1px solid var(--border);border-radius:10px;padding:16px}
+.schema-field-label{font-size:10px;font-weight:700;color:#475569;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.schema-field-name{font-size:14px;font-weight:600;color:var(--text)}
+.pods-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+.pod-card{background:#FFFFFF;border-radius:12px;padding:20px;border:1px solid var(--border);transition:border-color .2s}
+.pod-type-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.pod-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px}
+.pod-desc{font-size:12px;color:var(--hd-text);line-height:1.5}
+.record-card{background:#FFFFFF;border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
+.record-header{background:linear-gradient(90deg,#FFFFFF,#D1FAE5);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #D97706}
+.record-id{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;color:var(--gold)}
+.record-fields{display:grid;grid-template-columns:repeat(3,1fr)}
+.record-field{padding:14px 16px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+.record-field:nth-child(3n){border-right:none}
+.record-field-label{font-size:11px;font-weight:700;color:var(--hd-text);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px}
+.record-field-value{font-size:14px;font-weight:500;color:var(--text)}
+.note-tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap}
+.note-tab{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid rgba(0,100,205,.2);background:#FFFFFF;color:#2563EB;font-family:'Inter',sans-serif;transition:all .2s}
+.note-tab.active{background:#2563EB;border-color:#2563EB;color:#ffffff}
+.note-area{width:100%;background:#F8FAFC;border:1px solid var(--border);border-radius:8px;padding:16px;font-size:14px;color:var(--text);font-family:'Inter',sans-serif;resize:vertical;min-height:300px;outline:none;line-height:1.7}
+.note-area:focus{border-color:var(--cyan2)}
+.note-area::placeholder{color:#475569}
+.govern-btn{background:linear-gradient(135deg,#2563EB,#2563EB);border:none;color:#ffffff;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px}
+.chain-custody{background:rgba(51,224,196,.06);border:1px solid rgba(51,224,196,.2);border-radius:8px;padding:12px 16px;font-size:12px;color:var(--teal);font-family:'IBM Plex Mono',monospace;margin-bottom:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.upload-zone{background:#F8FAFC;border:2px dashed var(--border2);border-radius:10px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:16px}
+.upload-zone:hover{border-color:var(--teal);background:rgba(51,224,196,.05)}
+.upload-icon{font-size:32px;margin-bottom:8px}
+.upload-text{font-size:13px;color:var(--hd-text)}
+.upload-sub{font-size:11px;color:#475569;margin-top:4px}
+.log-header{background:linear-gradient(90deg,#FFFFFF,#EDE9FE);border-radius:10px 10px 0 0;padding:14px 20px;display:flex;align-items:center;gap:12px;border-bottom:2px solid #D97706}
+.log-title{font-size:14px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase}
+.log-row{display:grid;grid-template-columns:1fr 1fr 1fr 80px 80px 120px;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;align-items:center;cursor:pointer}
+.log-row:hover{background:rgba(98,200,255,.04)}
+.event-row{display:grid;grid-template-columns:140px 1fr 180px 160px;gap:12px;align-items:center;padding:14px 16px;background:#F8FAFC;border-radius:8px;margin-bottom:8px;border:1px solid var(--border)}
+.event-date{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--cyan)}
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;font-family:'IBM Plex Mono',monospace}
+.toast.show{opacity:1}
+.toast.ok{background:#059669;border:1px solid var(--green);color:var(--green)}
+.toast.err{background:#991B1B;border:1px solid var(--coral);color:var(--coral)}
+.empty{text-align:center;padding:48px 24px;color:#475569}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.loading{text-align:center;padding:32px;color:#475569;font-family:'IBM Plex Mono',monospace;font-size:13px}
+#privacy-screen{display:none;position:fixed;inset:0;background:#FFFFFF;z-index:9998;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+#privacy-screen.show{display:flex}
+@media(max-width:900px){.nav{display:none}.main{margin-left:0}.stats-grid{grid-template-columns:repeat(2,1fr)}.charts-grid{grid-template-columns:1fr}.schema-grid{grid-template-columns:repeat(2,1fr)}.pods-grid{grid-template-columns:1fr}}
+</style>
+
+<style>
+.field-explain-btn{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#E0E7FF;color:#2563EB;font-size:11px;font-weight:700;cursor:pointer;border:none;line-height:1;margin-left:6px;flex-shrink:0;transition:background .15s}
+.field-explain-btn:hover{background:#2563EB;color:#fff}
+.field-explain-popover{position:fixed;z-index:9999;background:#fff;border:2px solid #2563EB;border-radius:12px;padding:16px 18px;max-width:320px;box-shadow:0 8px 32px rgba(37,99,235,.15);font-family:Inter,sans-serif}
+.field-explain-popover .fep-close{position:absolute;top:10px;right:12px;cursor:pointer;color:#94A3B8;font-size:16px;line-height:1}
+.field-explain-popover .fep-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.field-explain-popover .fep-text{font-size:13px;color:#0F172A;line-height:1.6;margin-bottom:8px}
+.field-explain-popover .fep-example{font-size:11px;color:#475569;background:#F8FAFC;border-radius:6px;padding:6px 8px;font-family:'IBM Plex Mono',monospace}
+</style>
+<script>window.NEXUS_META={"nexus_name":"Justice & Social Services Hub","entity_label":"Client Case Record","fields":["CASE STATUS","RISK ASSESSMENT LEVEL","NEXT HEARING DATE","ASSIGNED CASE WORKER","ACTIVE SERVICE PROGRAMS","HOUSING STABILITY STATUS","SUPERVISION TYPE","COMPLIANCE SCORE","REFERRAL SOURCE","COURT JURISDICTION","BENEFITS ENROLLMENT","REENTRY SUPPORT FLAG"],"field_explanations":[{"what":"Current standing of the individual's open case","why":"Determines urgency and required follow-up actions","example":"Active, Closed, Pending Review"},{"what":"Evaluated danger or vulnerability tier of the client","why":"Guides resource allocation and intervention intensity","example":"High, Moderate, Low"},{"what":"Scheduled date for next court appearance","why":"Ensures timely preparation and attendance compliance","example":"March 14, 2025"},{"what":"Staff member responsible for managing the case","why":"Establishes accountability and primary point of contact","example":"Maria Torres, Case Worker II"},{"what":"List of programs the client is currently enrolled in","why":"Prevents duplication and tracks service utilization","example":"Job Training, Substance Counseling"},{"what":"Whether client has stable, temporary, or no housing","why":"Housing instability correlates with recidivism and crises","example":"Stable, Transitional, Unhoused"},{"what":"Type of legal oversight the individual is under","why":"Defines reporting requirements and movement restrictions","example":"Probation, Parole, Diversion"},{"what":"Numeric score reflecting adherence to case requirements","why":"Flags non-compliance early for intervention","example":"87 out of 100"},{"what":"Agency or entity that initiated the case referral","why":"Tracks intake pathways and partner agency performance","example":"County Court, Community Clinic"},{"what":"Geographic or legal court district handling the case","why":"Determines applicable laws and assigned judicial resources","example":"5th District Family Court"},{"what":"Public assistance or social benefit programs enrolled","why":"Identifies financial support gaps and eligibility issues","example":"SNAP, Medicaid, Housing Voucher"},{"what":"Indicates if client requires post-incarceration reentry services","why":"Triggers specialized reentry program assignment","example":"Yes – Release Date April 2025"}],"pods":[{"pod_name":"Case Timeline Tracker","pod_type":"window","description":"A live scrollable window displaying chronological milestones for each case including intake date, hearings, compliance checks, and service enrollments, giving workers a full history at a glance."},{"pod_name":"Client Support Network","pod_type":"room","description":"A collaborative workspace where case workers, supervisors, court liaisons, and service providers can communicate, share updates, and coordinate interventions around a shared client record."},{"pod_name":"Risk & Outcome Dashboard","pod_type":"infographic","description":"A visual infographic panel showing distribution of risk assessment levels, compliance score trends, housing stability breakdowns, and reentry flags across the caseload using color-coded charts and KPI tiles."}],"governance_tier":"Standard","schema_description":"Tracks individuals receiving justice system oversight or social services support, capturing legal status, service enrollment, risk assessments, and care coordination across multiple agencies and programs."};</script></head>
+<body oncontextmenu="return false">
+<div id="generation-status" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#0F172A; z-index:9999; flex-direction:column; align-items:center; justify-content:center; font-family:'IBM Plex Sans', sans-serif;">
+    <canvas id="cinema-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
+    
+    <div id="nexus-crown" style="opacity:0; transform: scale(0.5); transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position:relative; z-index:10; margin-bottom: 20px;">
+        <svg width="120" height="120" viewBox="0 0 100 100">
+            <polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" fill="none" stroke="rgba(51,224,196,0.8)" stroke-width="2" />
+            <line x1="50" y1="5" x2="50" y2="95" stroke="rgba(51,224,196,0.4)" stroke-width="1.5" />
+            <line x1="5" y1="27.5" x2="95" y2="72.5" stroke="rgba(51,224,196,0.4)" stroke-width="1.5" />
+            <line x1="5" y1="72.5" x2="95" y2="27.5" stroke="rgba(51,224,196,0.4)" stroke-width="1.5" />
+            <polygon points="50,23 80,38 80,62 50,77 20,62 20,38" fill="none" stroke="rgba(255,215,0,0.8)" stroke-width="1.5" />
+        </svg>
+    </div>
+
+    <div id="cinema-app-name" style="opacity:0; color:var(--hd-text); font-size:28px; font-weight:700; letter-spacing:2px; margin-bottom:40px; z-index:10; text-shadow:0 0 20px rgba(51,224,196,0.6); transition: opacity 2s ease;"></div>
+    
+    <div id="cinema-hud" style="color:#3B82F6; font-family:'IBM Plex Mono', monospace; font-size:13px; letter-spacing:1px; z-index:10; background:rgba(13,36,64,0.6); padding:8px 16px; border-radius:20px; border:1px solid rgba(45,80,128,0.4);">
+        INITIALIZING ARCHITECTURAL SPINE...
+    </div>
+</div>
+
+<style>
+    #nexus-crown svg { animation: spinCube 8s linear infinite; transform-style: preserve-3d; }
+    @keyframes spinCube {
+        0% { transform: rotate3d(1, 1, 1, 0deg); }
+        100% { transform: rotate3d(1, 1, 1, 360deg); }
+    }
+</style>
+
+<script>
+let canvas, ctx, particles = [], animationFrameId, buildProgress = 0;
+
+function initCinemaParticles() {
+    canvas = document.getElementById('cinema-canvas');
+    if(!canvas) return;
+    ctx = canvas.getContext('2d');
+    resizeCanvas();
+    window.removeEventListener('resize', resizeCanvas);
+    window.addEventListener('resize', resizeCanvas);
+    
+    particles = [];
+    buildProgress = 0;
+    
+    const crown = document.getElementById('nexus-crown');
+    const nameLabel = document.getElementById('cinema-app-name');
+    if(crown) { crown.style.opacity = '0'; crown.style.transform = 'scale(0.5)'; }
+    if(nameLabel) nameLabel.style.opacity = '0';
+    
+    for(let i=0; i<450; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            targetX: 0, targetY: 0,
+            speed: 0.02 + Math.random() * 0.03,
+            radius: 1 + Math.random() * 2,
+            color: Math.random() > 0.4 ? '51, 224, 196' : '255, 215, 0',
+            angle: Math.random() * Math.PI * 2
+        });
+    }
+    if(animationFrameId) cancelAnimationFrame(animationFrameId);
+    animateCinema();
+}
+
+function resizeCanvas() {
+    if(canvas) { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+}
+
+function animateCinema() {
+    ctx.fillStyle = 'rgba(7, 17, 30, 0.2)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    if(buildProgress < 1) buildProgress += 0.0015;
+    
+    let cx = canvas.width / 2;
+    let cy = canvas.height / 2 + 50;
+    
+    particles.forEach((p, idx) => {
+        if (buildProgress < 0.25) {
+            p.angle += 0.008;
+            p.x += Math.cos(p.angle) * 0.6;
+            p.y += Math.sin(p.angle) * 0.6;
+        } else if (buildProgress < 0.88) {
+            let layer = idx % 3;
+            let baseWidth = 320 - (layer * 95);
+            let layerY = cy - (layer * 65);
+            let segment = idx % 3;
+            
+            if(segment === 0) { p.targetX = cx - baseWidth/2 + ((idx * 7) % baseWidth); p.targetY = layerY; }
+            else if(segment === 1) { p.targetX = cx + baseWidth/2 - ((idx * 7) % baseWidth); p.targetY = layerY; }
+            else { p.targetX = cx; p.targetY = cy - 180; }
+            
+            p.x += (p.targetX - p.x) * p.speed;
+            p.y += (p.targetY - p.y) * p.speed;
+        } else {
+            p.x += (cx - p.x) * 0.07;
+            p.y += ((cy - 90) - p.y) * 0.07;
+            
+            if(buildProgress >= 0.97) {
+                const crown = document.getElementById('nexus-crown');
+                const nameLabel = document.getElementById('cinema-app-name');
+                if(crown) { crown.style.opacity = '1'; crown.style.transform = 'scale(1) rotate(0deg)'; }
+                if(nameLabel) {
+                    nameLabel.style.opacity = '1';
+                    nameLabel.textContent = document.getElementById('status-app-name')?.textContent || 'NEXUS ARRANGEMENT ACTIVE';
+                }
+            }
+        }
+        
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${p.color}, ${0.4 + Math.random() * 0.6})`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = `rgba(${p.color}, 0.4外部)`;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    });
+    
+    const currentMsg = document.getElementById('status-current-step')?.textContent;
+    const hud = document.getElementById('cinema-hud');
+    if(hud && currentMsg) { hud.textContent = currentMsg.toUpperCase(); }
+    
+    animationFrameId = requestAnimationFrame(animateCinema);
+}
+</script>
+
+<div id="privacy-screen" onclick="togglePrivacy()">
+  <div style="font-size:80px">&#9733;</div>
+  <div style="font-size:20px;font-weight:700;color:var(--hd-text);font-family:'IBM Plex Mono',monospace">AIRS NEXUS — SCREEN LOCKED</div>
+  <div style="font-size:13px;color:#475569;font-family:'IBM Plex Mono',monospace">Click anywhere to unlock</div>
+</div>
+<header class="header">
+  <div class="header-left">
+    <div>
+      <div class="logo" onclick="togglePrivacy()" title="Lock Screen"><span class="logo-star">&#9733;</span><span>AIRS</span></div>
+      <div class="logo-sub">Governed AI Data System &middot; DeBacco Nexus LLC</div>
+    </div>
+    <div class="igm-bar">
+      <span>IGM: <span class="igm-governed">GOVERNED &#10003;</span></span>
+      <span>BUDGET: <span class="igm-val" id="igm-budget-display">LIVE</span></span>
+      <span>TOKENS IN: <span class="igm-val" id="header-tokens-in">0</span></span>
+      <span>TOKENS OUT: <span class="igm-val" id="header-tokens-out">0</span></span>
+      <span>RULE: <span class="igm-val">1-JOULE</span></span>
+      <span style="color:#475569">USPTO 19/571,156</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <select id="lang-select" onchange="setLanguage(this.value)" style="padding:6px 10px;font-size:11px;border-radius:6px;border:1px solid rgba(0,100,205,.2);background:#FFFFFF;color:#2563EB;font-weight:600;font-family:'IBM Plex Mono',monospace;cursor:pointer">
+      <option value="en">EN English</option>
+      <option value="es">ES Español</option>
+      <option value="bzj">BZ Kriol</option>
+      <option value="fr">FR Français</option>
+      <option value="pt">PT Português</option>
+      <option value="zh">ZH 中文</option>
+      <option value="ar">AR العربية</option>
+      <option value="de">DE Deutsch</option>
+      <option value="it">IT Italiano</option>
+      <option value="ja">JA 日本語</option>
+      <option value="ko">KO 한국어</option>
+      <option value="hi">HI हिन्दी</option>
+      <option value="ur">UR اردو</option>
+      <option value="tl">TL Tagalog</option>
+      <option value="vi">VI Tiếng Việt</option>
+      <option value="ru">RU Русский</option>
+      <option value="sw">SW Kiswahili</option>
+      <option value="ht">HT Kreyòl Ayisyen</option>
+      <option value="pl">PL Polski</option>
+      <option value="nl">NL Nederlands</option>
+      <option value="tr">TR Türkçe</option>
+      <option value="th">TH ไทย</option>
+      <option value="ms">MS Bahasa Melayu</option>
+      <option value="am">AM አማርኛ</option>
+      <option value="so">SO Soomaali</option>
+    </select>
+    <button class="hbtn" onclick="showMode('home')">&#8962; Home</button>
+    <button class="hbtn" onclick="togglePrivacy()">&#8857; Privacy</button>
+    <button class="hbtn demo" id="demo-btn" onclick="openDemo()" aria-haspopup="dialog">&#9889; DEMO</button>
+  </div>
+</header>
+<div id="demo-overlay" class="demo-overlay" role="dialog" aria-modal="true" aria-labelledby="demo-title" onclick="if(event.target===this)closeDemo()">
+  <div class="demo-modal">
+    <h2 id="demo-title">&#9889; <span id="demo-nexus-name"></span> &#8212; Guided Demo</h2>
+    <div class="demo-sub">AIRS Nexus &middot; Governed &middot; Tier: <span id="demo-tier"></span> &middot; USPTO 19/571,156</div>
+    <div class="demo-section"><div class="demo-label">What This Nexus Does</div><div class="demo-text" id="demo-desc"></div></div>
+    <div class="demo-section"><div class="demo-label">Governed Fields</div><div class="demo-chips" id="demo-fields"></div></div>
+    <div class="demo-section" id="demo-pods-wrap"><div class="demo-label">Suggested Pods</div><div class="demo-chips" id="demo-pods"></div></div>
+    <div class="demo-section"><div class="demo-label">Tour &#8212; Tap a Step to Go There</div><div id="demo-steps"></div></div>
+    <div class="demo-section"><div class="demo-label">Sample Data &#8212; Synthetic Records, No Real PII</div><button class="demo-action" onclick="loadDemoData()">Load 8 Sample Records</button><button class="demo-action clear" onclick="clearDemoData()">Clear Sample Data</button></div>
+    <div class="demo-igm">Every write is logged. Every inference is accountable. RQ = I(d) / P(s) + T(c)</div>
+    <button class="demo-close" id="demo-close-btn" onclick="closeDemo()">Close Demo</button>
+  </div>
+</div>
+<div class="layout">
+<nav class="nav">
+  <div class="nav-section">AIRS Nexus</div>
+  <button class="nav-btn active" data-mode="home" onclick="showMode('home')"><span class="nav-icon">&#11041;</span> Home</button>
+  <button class="nav-btn" data-mode="dashboard" onclick="showMode('dashboard')"><span class="nav-icon">&#9638;</span> Dashboard</button>
+  <button class="nav-btn" data-mode="newrecord" onclick="showMode('newrecord')"><span class="nav-icon">+</span> New Record</button>
+  <button class="nav-btn" data-mode="records" onclick="showMode('records')"><span class="nav-icon">&#8981;</span> Records</button>
+  <div class="nav-divider"></div>
+  <div class="nav-section">Rooms</div>
+  <button class="nav-btn" data-mode="rawnote" onclick="showMode('rawnote')"><span class="nav-icon">&#9999;</span> Raw Note</button>
+  <button class="nav-btn" data-mode="calendar" onclick="showMode('calendar')"><span class="nav-icon">&#128197;</span> Calendar</button>
+  <button class="nav-btn" data-mode="documents" onclick="showMode('documents')"><span class="nav-icon">&#128203;</span> Document Archive</button>
+  <div class="nav-divider"></div>
+  <div class="nav-section">Reports</div>
+  <button class="nav-btn" data-mode="datalog" onclick="showMode('datalog')"><span class="nav-icon">&#9632;</span> Governed Data Log</button>
+  <button class="nav-btn" data-mode="gdi" onclick="showMode('gdi')"><span class="nav-icon">&#9670;</span> GDI Analysis</button>
+  <button class="nav-btn" data-mode="viz" onclick="showMode('viz')"><span class="nav-icon">&#9680;</span> Governed Viz</button>
+  <button class="nav-btn" data-mode="about" onclick="showMode('about')"><span class="nav-icon">&#9733;</span> About AIRS</button>
+  <button class="nav-btn" data-mode="askairs" onclick="showMode('askairs')"><span class="nav-icon">&#9672;</span> Ask AIRS</button>
+  <button class="nav-btn" data-mode="nexuslive" onclick="showMode('nexuslive')"><span class="nav-icon">&#127908;</span> Nexus Live</button>
+  <button class="nav-btn" data-mode="schemas" onclick="showMode('schemas')" style="background:#FF8833;color:#FFFFFF;font-weight:700"><span class="nav-icon">📊</span> Schema Slides</button>
+</nav>
+
+<script>
+
+</script>
+<div class="main">
+
+<div id="mode-home">
+  <div class="home-hero">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap">
+      <div class="home-nexus-name" id="home-nexus-name">AIRS Nexus</div>
+      <span class="home-tier" id="home-tier">IGM &middot; Standard</span>
+    </div>
+    <div class="home-entity" id="home-entity">Governed Data System &middot; DeBacco Nexus LLC &middot; USPTO 19/571,156</div>
+  </div>
+  <div class="section-label">Schema Fields</div>
+  <div class="schema-grid" id="home-schema-grid"><div class="loading">Loading...</div></div>
+  <div class="section-label">Generated Pods</div>
+  <div class="pods-grid" id="home-pods-grid"><div class="loading">Loading...</div></div>
+  <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:8px">
+    <button class="btn btn-primary" onclick="showMode('dashboard')" style="padding:16px 40px;font-size:15px">Enter Records &#8594;</button>
+    <button onclick="showMode('about')" style="padding:16px 40px;font-size:15px;font-weight:700;border-radius:10px;border:2px solid #2563EB;background:#FFFFFF;color:#2563EB;cursor:pointer;font-family:'Inter',sans-serif">About AIRS &#9733;</button>
+  </div>
+</div>
+
+<div id="mode-dashboard" style="display:none">
+  <div class="stats-grid">
+    <div class="stat-card default"><div class="stat-num" id="stat-active">&#8212;</div><div class="stat-label" id="stat-active-label">Active Records</div></div>
+    <div class="stat-card red"><div class="stat-num" id="stat-events">&#8212;</div><div class="stat-label">Upcoming Events</div></div>
+    <div class="stat-card green"><div class="stat-num" id="stat-completed">&#8212;</div><div class="stat-label">Completed</div></div>
+    <div class="stat-card blue"><div class="stat-num" id="stat-total">&#8212;</div><div class="stat-label">Total Records</div></div>
+  </div>
+  <div class="charts-grid">
+    <div class="chart-card"><div class="chart-title">Records &mdash; Last 30 Days</div><div class="chart-wrap"><canvas id="chart-timeseries"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Status Breakdown</div><div class="chart-wrap"><canvas id="chart-status"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title" id="chart-field-title">Field Distribution</div><div class="chart-wrap"><canvas id="chart-fields"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">IGM Governance Activity</div><div class="chart-wrap"><canvas id="chart-governance"></canvas></div></div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title" id="dashboard-table-title">Active Records <span class="igm-badge">GOVERNED</span></div>
+      <div class="filters">
+        <input class="filter-input" id="dash-search" placeholder="Search records..." oninput="loadDashboard()" style="width:220px">
+        <select class="filter-input" id="dash-status" onchange="loadDashboard()" style="width:160px">
+          <option value="">All Statuses</option>
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+          <option value="pending">Pending</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-wrap"><table><thead><tr id="dash-thead"></tr></thead><tbody id="dash-tbody"><tr><td colspan="6" class="loading">Loading records...</td></tr></tbody></table></div>
+  </div>
+</div>
+
+<div id="mode-newrecord" style="display:none">
+  <div class="card">
+    <div class="card-header"><div class="card-title" id="newrecord-title">New Record <span class="igm-badge">GOVERNED</span></div></div>
+    <div id="newrecord-form-fields" class="form-grid"></div>
+    <div style="margin-top:16px"><div class="form-group"><label>Status</label><select class="form-input" id="nr-status"><option value="active">Active</option><option value="pending">Pending</option><option value="completed">Completed</option><option value="inactive">Inactive</option></select></div></div>
+    <div style="margin-top:16px"><div class="form-group"><label>Notes</label><textarea class="form-input" id="nr-notes" placeholder="Optional notes..." rows="3"></textarea></div></div>
+    <div style="margin-top:20px;display:flex;gap:12px;align-items:center">
+      <button class="btn btn-primary" onclick="saveRecord()" style="padding:12px 32px">&#9679; Save Record</button>
+      <div style="font-size:11px;color:#475569;font-family:'IBM Plex Mono',monospace">IGM GOVERNANCE: INTAKE MODULE | RULE: 1-JOULE | STATUS: <span style="color:var(--teal)">GOVERNED &#10003;</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="mode-records" style="display:none">
+  <div class="card">
+    <div class="card-header"><div class="card-title" id="records-title">Records <span class="igm-badge">GOVERNED</span></div></div>
+    <div class="filters">
+      <input class="filter-input" id="rec-search" placeholder="Search records..." style="flex:1;min-width:200px">
+      <button class="btn btn-primary btn-sm" onclick="searchRecords()">Search</button>
+      <button class="btn btn-ghost btn-sm" onclick="loadRecords()">Show All</button>
+    </div>
+    <div class="table-wrap"><table><thead><tr id="rec-thead"></tr></thead><tbody id="rec-tbody"><tr><td colspan="6" class="loading">Loading records...</td></tr></tbody></table></div>
+  </div>
+  <div id="record-detail" style="display:none"></div>
+</div>
+
+<div id="mode-rawnote" style="display:none">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Raw Note <span class="igm-badge">GOVERNED</span></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <input class="filter-input" id="note-rec-search" placeholder="Search to link record..." style="width:220px">
+        <span id="note-rec-selected" style="font-size:12px;color:#475569;font-family:'IBM Plex Mono',monospace">&#8212; No record linked &#8212;</span>
+      </div>
+    </div>
+    <div class="note-tabs">
+      <button class="note-tab active" onclick="setNoteTab('record')" id="tab-record">&#9673; <span id="tab-record-label">Record</span> Note</button>
+      <button class="note-tab" onclick="setNoteTab('general')" id="tab-general">&#9776; General Note</button>
+      <button class="note-tab" onclick="setNoteTab('todo')" id="tab-todo">&#10003; To Do List</button>
+    </div>
+    <textarea class="note-area" id="note-content" placeholder="Tap here &#8212; write with Apple Pencil, stylus, or keyboard..."></textarea>
+    <div style="display:flex;gap:12px;margin-top:16px;align-items:center;flex-wrap:wrap">
+      <button class="govern-btn" onclick="governNote()">&#9670; Govern Note</button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('note-content').value=''">&#10005; Clear</button>
+      <button class="btn btn-ghost btn-sm" onclick="loadGovernedNotes()">&#8635; Refresh Notes</button>
+      <span style="font-size:11px;color:#475569;font-family:'IBM Plex Mono',monospace" id="note-status"></span>
+    </div>
+    <div style="margin-top:24px">
+      <div class="section-label">Governed Notes</div>
+      <div id="governed-notes-list"><div class="loading">Loading...</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="mode-calendar" style="display:none">
+  <div class="card">
+    <div class="card-header"><div class="card-title">Calendar <span class="igm-badge">GOVERNED</span></div></div>
+    <div class="filters" style="margin-bottom:20px">
+      <div class="form-group"><label>Date</label><input type="date" class="filter-input" id="cal-date" style="width:180px"></div>
+      <div class="form-group"><label>Location</label><input class="filter-input" id="cal-location" placeholder="Filter by location..." style="width:200px"></div>
+      <div class="form-group"><label>Assigned To</label><input class="filter-input" id="cal-assigned" placeholder="Filter by name..." style="width:200px"></div>
+      <div style="display:flex;gap:8px;align-items:flex-end">
+        <button class="btn btn-primary btn-sm" onclick="loadCalendar()">Load</button>
+        <button class="btn btn-ghost btn-sm" onclick="loadAllCalendar()">Show All</button>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title" style="margin-bottom:14px;font-size:12px">Add Event</div>
+      <div class="form-grid cols3">
+        <div class="form-group"><label>Date</label><input type="date" class="form-input" id="new-event-date"></div>
+        <div class="form-group"><label>Event Type</label><input class="form-input" id="new-event-type" placeholder="e.g. Review, Meeting, Deadline"></div>
+        <div class="form-group"><label>Location</label><input class="form-input" id="new-event-location" placeholder="Location or virtual"></div>
+        <div class="form-group"><label>Assigned To</label><input class="form-input" id="new-event-assigned" placeholder="Name"></div>
+        <div class="form-group"><label>Notes</label><input class="form-input" id="new-event-notes" placeholder="Optional"></div>
+        <div style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="addCalendarEvent()" style="width:100%">Add Event</button></div>
+      </div>
+    </div>
+    <div id="cal-events"><div class="loading">Select a date or show all events.</div></div>
+  </div>
+</div>
+
+<div id="mode-documents" style="display:none">
+  <div class="card">
+    <div class="card-header"><div class="card-title">Document Intelligence Archive <span class="igm-badge">GOVERNED</span></div></div>
+    <div class="chain-custody">&#9670; Chain of Custody: <span>Submitted</span> &#8594; <span>Governed</span> &#8594; <span>Confirmed</span> &#8594; <span>Archived</span></div>
+    <div class="form-grid" style="margin-bottom:16px">
+      <div class="form-group"><label>Date</label><input type="date" class="form-input" id="doc-date"></div>
+      <div class="form-group"><label>Assigned To</label><input class="form-input" id="doc-assigned" placeholder="Name"></div>
+      <div class="form-group"><label>Document Type</label><select class="form-input" id="doc-type"><option value="">Select type</option><option>Report</option><option>Form</option><option>Letter</option><option>Contract</option><option>Evidence</option><option>Photo</option><option>ID / Credential</option><option>Other</option></select></div>
+      <div class="form-group"><label>Document Source</label><select class="form-input" id="doc-source"><option value="">Select source</option><option>Internal</option><option>External Agency</option><option>Client Submitted</option><option>Court Issued</option><option>Government</option><option>Other</option></select></div>
+      <div class="form-group"><label>Received Via</label><select class="form-input" id="doc-received"><option value="">Select method</option><option>Email</option><option>In Person</option><option>Mail</option><option>Fax</option><option>Portal Upload</option><option>Other</option></select></div>
+    </div>
+    <div class="upload-zone" onclick="document.getElementById('doc-file').click()">
+      <input type="file" id="doc-file" style="display:none" accept=".pdf,.png,.jpg,.jpeg" onchange="handleDocUpload(event)">
+      <div class="upload-icon">&#128206;</div>
+      <div class="upload-text">Tap to upload document</div>
+      <div class="upload-sub">PDF &middot; PNG &middot; JPEG &middot; Screenshot</div>
+    </div>
+    <div style="margin-bottom:12px">
+        <label style="font-size:12px;font-weight:700;color:#2563EB;display:block;margin-bottom:6px">PASTE DOCUMENT CONTENT OR UPLOAD A FILE</label>
+        <textarea id="doc-content" placeholder="Paste your document content here... reports, notes, assessments, forms — AIRS will read and extract governed insights" style="width:100%;min-height:120px;padding:12px;font-size:13px;border:1px solid rgba(0,100,205,.2);border-radius:8px;font-family:Inter,sans-serif;color:var(--hd-text);resize:vertical"></textarea>
+        <div style="margin-top:8px;display:flex;align-items:center;gap:10px">
+          <input type="file" id="doc-file-input" accept=".txt,.csv,.md,.html" onchange="readDocFile(this)" style="font-size:12px">
+          <span id="doc-file-status" style="font-size:11px;color:#475569"></span>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:12px;font-weight:700;color:#2563EB;display:block;margin-bottom:6px">UPLOAD DOCUMENT (PDF, DOCX, TXT, CSV)</label>
+        <input type="file" id="doc-file-real" accept=".pdf,.docx,.doc,.txt,.csv,.html,.md" style="font-size:13px;margin-bottom:8px;display:block">
+        <div id="doc-upload-status" style="font-size:11px;color:#475569;margin-bottom:8px"></div>
+      </div>
+      <button class="btn btn-primary" onclick="uploadAndExtract()" style="width:100%;padding:14px">&#9670; Upload &amp; Extract with Governed AI</button>
+    <div style="margin-top:24px">
+      <div class="section-label">Document Archive</div>
+      <div id="doc-archive-list"><div class="loading">Loading archive...</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="mode-about" style="display:none">
+  <div style="padding:32px;max-width:800px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="font-size:28px;font-weight:700;color:#2563EB;margin-bottom:8px">About AIRS</div>
+      <div style="font-size:14px;color:#475569">AI Insight — Adaptive Intelligent Reporting System</div>
+      <div style="font-size:12px;color:#2563EB;font-weight:600;margin-top:4px">Deployed on the NODO Governed AI Architecture · USC Doctoral Research</div>
+      <div style="font-size:12px;color:#059669;margin-top:4px">USPTO Patent Pending 19/571,156 | DeBacco Nexus LLC</div>
+    </div>
+    <div class="story-card" style="border:2px solid #0F172A;background:linear-gradient(135deg,#0F172A,#1E3A5F);color:#FFFFFF;margin-bottom:16px">
+  <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:#60A5FA;margin-bottom:8px">GOVERNING ARCHITECTURE</div>
+  <div style="font-size:20px;font-weight:700;color:#FFFFFF;margin-bottom:8px">NODO — The Architecture Behind AIRS</div>
+  <div style="font-size:12px;color:#94A3B8;font-style:italic;margin-bottom:12px">Governed AI architecture for revealing institutional blindness</div>
+  <div style="font-size:13px;color:#CBD5E1;line-height:1.8">
+    AIRS is the deployed implementation of NODO — a governed AI architecture developed through doctoral research at the University of Southern California. NODO defines how AI systems should reason across data schemas without fabricating, how governance gates should operate before inference executes, and how every AI action should leave auditable evidence.
+    <br><br>
+    <strong style="color:#60A5FA">The Knot</strong> — where separate schemas meet, where institutional blindness becomes visible, and where governance gates operate. NODO identifies the knot in your data before the AI crosses it.
+    <br><br>
+    <strong style="color:#34D399">Pre-inference governance</strong> — the IGM (Inference Governance Module) analyzes intent, applies NSI constraints, and sets token budgets BEFORE the responder executes. Governance is not inspected after the fact. It is enforced at the point of orchestration.
+    <br><br>
+    <strong style="color:#FBBF24">Audit receipts at every traversal</strong> — every cross-schema inference produces evidence: records scanned, rules executed, tokens consumed, RQ score, and timestamp. Governance becomes legible because the system can prove how it reasoned.
+  </div>
+  <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:6px">
+    <span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;background:#1E3A5F;color:#60A5FA;border:1px solid #60A5FA">NODO Architecture</span>
+    <span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;background:#064E3B;color:#34D399;border:1px solid #34D399">Pre-Inference Governance</span>
+    <span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;background:#451A03;color:#FBBF24;border:1px solid #FBBF24">USC Doctoral Research</span>
+    <span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;background:#2D1B69;color:#A78BFA;border:1px solid #A78BFA">Patent Pending 19/571,156</span>
+  </div>
+</div>
+<div class="story-card" style="border:2px solid #2563EB;background:#FFFFFF"><div style="font-size:16px;font-weight:700;color:#2563EB;margin-bottom:8px">Why trust AIRS?</div><div style="font-size:13px;color:#334155;font-style:italic;font-weight:500;margin-bottom:12px">The architecture is the validation</div><div style="font-size:14px;color:#0F172A;line-height:1.8;font-weight:500">AIRS is the only system in existence that shows you what your data cannot see — through three tiers of intelligent insight across any domain, any industry, any scale. NSI audits what the schema cannot see. GDI fires deterministic rules with zero AI tokens. PGI delivers predictions with confidence bounds and receipts. No other platform admits its blind spots, meters every token, and produces auditable proof of every inference. This is governance infrastructure — patent-pending (USPTO 19/571,156) and built from the ground up to make AI accountable.</div><div style="margin-top:12px"><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#D1FAE5;color:#059669">Three Tiers</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FEE2E2;color:#991B1B">Honest About Blind Spots</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FFFFFF;color:#1E40AF">Zero Hallucination Rules</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FEF3C7;color:#92400E">Every Action Receipted</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#EDE9FE;color:#7C3AED">Patent Pending</span></div></div>
+    <div class="story-card">
+      <div style="font-size:16px;font-weight:700;color:#2563EB;margin-bottom:8px">Your data is governed from birth</div>
+      <div style="font-size:13px;color:#334155;font-style:italic;font-weight:500;margin-bottom:12px">Every record, every field, every change — audited</div>
+      <div style="font-size:14px;color:#0F172A;line-height:1.8;font-weight:500">AIRS does not store your data in a black box. Every record enters a governed envelope where changes are timestamped, authored, and receipted. The Inference Governance Module (IGM) watches every AI interaction — metering tokens, logging queries, and producing audit trails.</div>
+      <div style="margin-top:12px"><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FFFFFF;color:#1E40AF">Audit Trail</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#D1FAE5;color:#059669">Token Budget</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FEF3C7;color:#92400E">Receipts</span></div>
+    </div>
+    <div class="story-card">
+      <div style="font-size:16px;font-weight:700;color:#2563EB;margin-bottom:8px">NSI — What gaps will be audited</div>
+      <div style="font-size:13px;color:#334155;font-style:italic;font-weight:500;margin-bottom:12px">Negative Space Intelligence identifies what your schema cannot see</div>
+      <div style="font-size:14px;color:#0F172A;line-height:1.8;font-weight:500">Most systems only analyze the data they have. AIRS also analyzes what is missing. NSI scans your schema structure and identifies fields, relationships, and data types that a domain expert would expect but that do not exist in your system. These gaps are surfaced, categorized by severity, and tracked.</div>
+      <div style="margin-top:12px"><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FFFFFF;color:#1E40AF">Structural Gaps</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FEE2E2;color:#991B1B">Cannot Capture</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#D1FAE5;color:#059669">Can Capture</span></div>
+    </div>
+    <div class="story-card">
+      <div style="font-size:16px;font-weight:700;color:#2563EB;margin-bottom:8px">GDI — What rules fire automatically</div>
+      <div style="font-size:13px;color:#334155;font-style:italic;font-weight:500;margin-bottom:12px">Governed Data Intelligence runs zero-token deterministic checks</div>
+      <div style="font-size:14px;color:#0F172A;line-height:1.8;font-weight:500">Every time you view the dashboard or run analysis, GDI fires five governance rules: contact recency, pending aging, event preparedness, field completeness, and status distribution. These rules use zero AI tokens — they are deterministic, instantaneous, and produce auditable findings with evidence.</div>
+      <div style="margin-top:12px"><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#D1FAE5;color:#059669">5 Rules</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FFFFFF;color:#1E40AF">Zero Tokens</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#EDE9FE;color:#7C3AED">Evidence Chips</span></div>
+    </div>
+    <div class="story-card">
+      <div style="font-size:16px;font-weight:700;color:#2563EB;margin-bottom:8px">PGI — What predictions are possible</div>
+      <div style="font-size:13px;color:#334155;font-style:italic;font-weight:500;margin-bottom:12px">Predictive Governed Intelligence with confidence bounds</div>
+      <div style="font-size:14px;color:#0F172A;line-height:1.8;font-weight:500">When you ask a question in Nexus Live, PGI provides governed predictions with confidence levels and human-approved action queues. Every prediction is bounded, receipted, and traceable. The system tells you what it thinks, how confident it is, and what data it used.</div>
+      <div style="margin-top:12px"><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FEF3C7;color:#92400E">Predictions</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FFFFFF;color:#1E40AF">Confidence</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FFEDD5;color:#9A3412">Receipted</span></div>
+    </div>
+    <div class="story-card">
+      <div style="font-size:16px;font-weight:700;color:#059669;margin-bottom:8px">PII Protection — How AIRS secures your data</div>
+      <div style="font-size:13px;color:#334155;font-style:italic;font-weight:500;margin-bottom:12px">Every sensitive field is masked, logged, and access-controlled</div>
+      <div style="font-size:14px;color:#0F172A;line-height:1.8;font-weight:500">Social Security Numbers are automatically masked (XXX-XX-XXXX). Every time a record containing PII is viewed, AIRS logs the access event with timestamp, user, and action type. Exports containing PII fields trigger governance alerts. The system protects people by making data access transparent and accountable.</div>
+      <div style="margin-top:12px"><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#D1FAE5;color:#059669">SSN Masked</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FFFFFF;color:#1E40AF">Access Logged</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FEE2E2;color:#991B1B">Export Controls</span></div>
+    </div>
+    <div class="story-card">
+      <div style="font-size:16px;font-weight:700;color:#2563EB;margin-bottom:8px">Every action receipted</div>
+      <div style="font-size:13px;color:#334155;font-style:italic;font-weight:500;margin-bottom:12px">The IGM formula: RQ = I(d) / P(s) + T(c)</div>
+      <div style="font-size:14px;color:#0F172A;line-height:1.8;font-weight:500">The Responsiveness Quotient (RQ) measures how efficiently the system responds to your queries. Records scanned, tokens consumed, processing time — all captured in a single auditable receipt. This is not monitoring. This is accountability infrastructure.</div>
+      <div style="margin-top:12px"><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FEF3C7;color:#92400E">RQ Score</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#D1FAE5;color:#059669">Token Metering</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#EDE9FE;color:#7C3AED">Audit Trail</span></div>
+                <div class="story-card" style="border:2px solid #2563EB">
+      <div style="font-size:16px;font-weight:700;color:#2563EB;margin-bottom:12px">Why AIRS is different from using AI directly</div>
+      <div style="font-size:14px;color:#0F172A;line-height:1.8">
+        Anyone can ask an AI a smart question and get a smart answer. That answer lives in a chat window and disappears.
+        <br><br>
+        AIRS is different because the intelligence is governed.
+        <br><br>
+        <strong>When you ask AI directly:</strong><br>
+        You get an answer. No receipt. No audit trail. No persistence. No way to prove what the AI saw, what it recommended, or whether anyone acted on it. The conversation ends and the insight is gone.
+        <br><br>
+        <strong>When you use AIRS:</strong><br>
+        Every inference is receipted with tokens, timestamp, and governance score. Every consultation is archived. Every governance finding is tagged by tier — what the schema cannot see (NSI), what rules fire automatically (GDI), what predictions carry constraints (PGI). The analysis lives inside a deployed system with a database, audit trail, and binding governance decisions.
+        <br><br>
+        <strong>The difference is not the intelligence. The difference is the accountability.</strong>
+        <br><br>
+        AI without insight is guessing. AI with insight sees what your system can't. AIRS builds insight.
+      </div>
+      <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px">
+        <span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;background:#DBEAFE;color:#1E40AF">Receipted Inference</span>
+        <span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;background:#D1FAE5;color:#065F46">Binding Governance</span>
+        <span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;background:#FEF3C7;color:#92400E">Deployed Infrastructure</span>
+        <span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;background:#EDE9FE;color:#5B21B6">Patent Pending 19/571,156</span>
+      </div>
+    </div>
+<div class="story-card" style="border:2px solid #059669;background:#FFFFFF">
+      <div style="font-size:16px;font-weight:700;color:#059669;margin-bottom:8px">How AIRS compares</div>
+      <div style="font-size:13px;color:#334155;font-style:italic;font-weight:500;margin-bottom:16px">See for yourself — run a demo in any domain</div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;color:var(--hd-text)">
+        <thead><tr style="border-bottom:2px solid #059669">
+          <th style="text-align:left;padding:8px 12px;font-weight:700;color:#059669">Capability</th>
+          <th style="text-align:center;padding:8px 12px;font-weight:700;color:#475569">Traditional Platforms</th>
+          <th style="text-align:center;padding:8px 12px;font-weight:700;color:#2563EB">AIRS</th>
+        </tr></thead>
+        <tbody>
+          <tr style="border-bottom:1px solid rgba(0,100,205,.1)"><td style="padding:8px 12px">Time to deploy</td><td style="text-align:center;padding:8px 12px;color:#475569">6-12 months</td><td style="text-align:center;padding:8px 12px;font-weight:700;color:#059669">90 seconds</td></tr>
+          <tr style="border-bottom:1px solid rgba(0,100,205,.1)"><td style="padding:8px 12px">Domains supported</td><td style="text-align:center;padding:8px 12px;color:#475569">1 vertical</td><td style="text-align:center;padding:8px 12px;font-weight:700;color:#059669">90+ any domain</td></tr>
+          <tr style="border-bottom:1px solid rgba(0,100,205,.1)"><td style="padding:8px 12px">Identifies schema gaps</td><td style="text-align:center;padding:8px 12px;color:#DC2626">No</td><td style="text-align:center;padding:8px 12px;font-weight:700;color:#059669">NSI (Tier 1)</td></tr>
+          <tr style="border-bottom:1px solid rgba(0,100,205,.1)"><td style="padding:8px 12px">Zero-token governance rules</td><td style="text-align:center;padding:8px 12px;color:#DC2626">No</td><td style="text-align:center;padding:8px 12px;font-weight:700;color:#059669">GDI (Tier 2)</td></tr>
+          <tr style="border-bottom:1px solid rgba(0,100,205,.1)"><td style="padding:8px 12px">Every inference receipted</td><td style="text-align:center;padding:8px 12px;color:#DC2626">No</td><td style="text-align:center;padding:8px 12px;font-weight:700;color:#059669">Yes</td></tr>
+          <tr style="border-bottom:1px solid rgba(0,100,205,.1)"><td style="padding:8px 12px">AI consultant intake</td><td style="text-align:center;padding:8px 12px;color:#DC2626">No</td><td style="text-align:center;padding:8px 12px;font-weight:700;color:#059669">Yes</td></tr>
+          <tr><td style="padding:8px 12px">Patent-pending architecture</td><td style="text-align:center;padding:8px 12px;color:#DC2626">No</td><td style="text-align:center;padding:8px 12px;font-weight:700;color:#059669">USPTO 19/571,156</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="story-card" style="border:2px solid #2563EB;background:linear-gradient(135deg,#FFFFFF,#D1FAE5)">
+      <div style="font-size:16px;font-weight:700;color:#2563EB;margin-bottom:8px">What makes AIRS different from everything else</div>
+      <div style="font-size:13px;color:#334155;font-style:italic;font-weight:500;margin-bottom:12px">Nobody else does this. Nobody.</div>
+      <div style="font-size:13px;color:var(--hd-text);line-height:1.9">Not Salesforce. Not Microsoft. Not Google. Not any AI startup.<br><br>They build tools you configure. AIRS builds governed systems that configure themselves.<br><br>They sell platforms you learn. AIRS builds intelligence that learns your domain.<br><br>They give you a database with a chatbot on top. AIRS gives you a complete governed application with three tiers of intelligence, audit trails, and receipts — born in 90 seconds from a single sentence.<br><br>90+ domains. One governance framework. Patent pending.<br><br>Built by a Marine Corps veteran and accredited Veterans Service Representative who developed the governance formula through correctional social work and applied it to AI systems management. This is not a product born in a boardroom. This is infrastructure born from lived experience.</div>
+      <div style="margin-top:12px"><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FFFFFF;color:#1E40AF">90+ Domains</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#D1FAE5;color:#059669">One Framework</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FEF3C7;color:#92400E">Patent Pending</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#EDE9FE;color:#7C3AED">Built by a Client Case Record</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FFEDD5;color:#9A3412">Applied AI</span></div>
+    </div>
+    </div>
+  </div>
+</div>
+<div id="mode-askairs" style="display:none">
+  <div style="max-width:800px;margin:0 auto;padding:24px">
+    <div style="font-size:22px;font-weight:700;color:#2563EB;margin-bottom:4px">Ask AIRS</div>
+    <div style="font-size:13px;color:var(--hd-text);line-height:1.7;margin-bottom:20px;max-width:700px">
+      Ask AIRS reads your governed records and responds with insight grounded in your actual data. Every answer includes a receipt showing how many records were scanned, how many tokens were used, and how long the analysis took. Ask operational questions like <em>"Who is overdue for observation?"</em> or strategic questions like <em>"Which modules are driving behavior change versus just building confidence?"</em> Ask AIRS does not guess. If the data cannot support an answer, it will tell you what is missing.
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:16px">
+      <input type="text" id="askairs-q" placeholder="What do you want to know?" style="flex:1;padding:12px 16px;font-size:14px;border:2px solid #2563EB;border-radius:10px;color:var(--hd-text);font-family:Inter,sans-serif" onkeydown="if(event.key==='Enter')askAIRS()">
+      <button onclick="askAIRS()" style="padding:12px 24px;font-size:14px;font-weight:700;border-radius:10px;border:none;background:#2563EB;color:#fff;cursor:pointer;font-family:Inter,sans-serif">Ask</button>
+    </div>
+    <div id="askairs-history" style="display:flex;flex-direction:column;gap:16px"></div>
+  </div>
+</div>
+<div id="mode-nexuslive" style="display:none">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:22px">&#127908;</span><span style="font-size:20px;font-weight:800;letter-spacing:.5px">NEXUS LIVE</span><span class="gov-badge">GOVERNED</span></div>
+  <div style="color:var(--hd-text);font-size:13px;margin-bottom:18px">Governed live inference &mdash; speak or type. Every answer born with a receipt. USPTO 19/571,156</div>
+  <div style="background:var(--bg2,#ffffff);border:1px solid var(--border,#2563EB);border-radius:12px;padding:20px">
+    <div style="display:flex;gap:12px;align-items:center">
+      <input class="form-input" id="live-q" placeholder="Speak or type a question about the governed record..." style="flex:1" onkeydown="if(event.key==='Enter')askLive()">
+      <button id="mic-btn" onclick="toggleMic()" aria-label="Voice input" style="min-width:54px;padding:10px;font-size:20px;border-radius:8px;border:1px solid var(--border,#2563EB);background:var(--bg3,#FFFFFF);color:var(--hd-text);cursor:pointer">&#127908;</button>
+      <button onclick="askLive()" style="padding:10px 22px;font-size:15px;font-weight:700;border-radius:8px;border:none;background:linear-gradient(90deg,#059669,#2563EB);color:#ffffff;cursor:pointer">ASK</button>
+    </div>
+    <div id="mic-status" role="status" aria-live="polite" style="margin-top:8px;color:var(--text3,#475569);font-size:13px"></div>
+    <div id="live-answer" aria-live="polite" style="display:none;margin-top:16px;padding:16px;border-radius:12px;background:rgba(51,224,196,0.06);border:1px solid rgba(51,224,196,0.3);white-space:pre-wrap;font-size:14px;line-height:1.6;color:var(--hd-text);font-weight:500"></div>
+    <div id="live-receipt" style="display:none;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#059669"></div>
+  </div>
+</div>
+<div id="mode-schemas" style="display:none;padding:20px">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:22px">📊</span><span style="font-size:20px;font-weight:800;letter-spacing:.5px">SCHEMA SLIDES</span></div>
+  <div style="color:#475569;font-size:13px;margin-bottom:18px">12 governed fields visualized. Navigate with arrow keys or buttons.</div>
+  <div id="slides-container" style="width:100%;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:20px;min-height:500px"></div>
+</div>
+
+<div id="mode-viz" style="display:none">
+  <div style="font-size:22px;font-weight:800;color:#F59E0B;margin-bottom:4px">&#9680; GOVERNED VIZ</div>
+  <div style="font-size:13px;color:#0F172A;margin-bottom:16px">Charts generated from live governed records. Every figure traceable. Governed &middot; USPTO 19/571,156</div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px">
+    <select id="viz-field" style="padding:10px 14px;font-size:15px;border-radius:8px;border:1px solid #2563EB;background:#ffffff;color:var(--hd-text)">
+      <option value="field_1">Field 1</option><option value="field_2">Field 2</option>
+      <option value="field_3">Field 3</option><option value="field_4">Field 4</option>
+      <option value="field_5">Field 5</option><option value="field_6">Field 6</option>
+      <option value="status" selected>Status</option>
+    </select>
+    <select id="viz-type" style="padding:10px 14px;font-size:15px;border-radius:8px;border:1px solid #2563EB;background:#ffffff;color:var(--hd-text)">
+      <option value="bar" selected>Bar Chart</option><option value="donut">Donut Chart</option>
+    </select>
+    <button onclick="renderViz()" style="padding:10px 22px;font-size:15px;font-weight:700;border-radius:8px;border:none;background:linear-gradient(90deg,#059669,#2563EB);color:#ffffff;cursor:pointer">GENERATE CHART</button>
+  </div>
+  <div id="viz-canvas" style="background:#ffffff;border:1px solid #2563EB;border-radius:12px;padding:24px;min-height:320px"></div>
+  <div id="viz-receipt" style="margin-top:10px;font-size:12px;color:#059669"></div>
+</div>
+<div id="mode-gdi" style="display:none">
+  <div class="card">
+    <div class="card-header"><div class="card-title">GDI &#8212; Governed Data Intelligence <span class="igm-badge">TIER 2 &middot; GOVERNED</span></div></div>
+    <div style="padding:16px">
+      <div style="font-size:13px;color:var(--hd-text);line-height:1.7;margin-bottom:14px">Cross-record inference with receipts. Deterministic rules, zero tokens, every run audit-logged. GDI reads what the data says &#8212; within the blind spots NSI has declared.</div>
+      <button class="btn btn-primary" onclick="runGDI()" id="gdi-run-btn">&#9670; Run GDI Analysis</button>
+      <span id="gdi-receipts" style="margin-left:14px;font-size:12px;color:var(--teal);font-family:'IBM Plex Mono',monospace"></span>
+    </div>
+    <div id="gdi-findings" style="padding:0 16px 16px"></div>
+  </div>
+</div>
+<div id="mode-datalog" style="display:none">
+  <div id="igm-audit-trail" style="display:none;margin-bottom:24px">
+    <div style="font-size:14px;font-weight:700;color:#2563EB;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+      <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#059669"></span>
+      IGM INFERENCE AUDIT TRAIL <span style="font-size:11px;font-weight:400;color:#475569;margin-left:8px">Every AI query receipted and logged</span>
+    </div>
+    <div id="igm-audit-list" style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:10px;overflow:hidden;font-family:Inter,sans-serif"></div>
+  </div>
+  <div style="border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);margin-bottom:20px">
+    <div class="log-header">
+      <span style="color:var(--gold);font-size:16px">&#9632;</span>
+      <div class="log-title">Governed Data Log <span style="font-size:11px;font-weight:400;color:var(--hd-text)">[GOVERNED]</span></div>
+      <div style="margin-left:auto">
+        <input class="filter-input btn-sm" id="log-search" placeholder="Search records..." style="width:220px" oninput="loadDataLog()">
+      </div>
+    </div>
+    <div style="background:#FFFFFF;padding:16px"><div id="log-table-wrap"><div class="loading">Loading governed data log...</div></div></div>
+  </div>
+  <div class="section-label">Governance Infographics</div>
+  <div class="charts-grid">
+    <div class="chart-card"><div class="chart-title">Governance Activity &mdash; 30 Days</div><div class="chart-wrap"><canvas id="log-chart-gov"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Record Status Distribution</div><div class="chart-wrap"><canvas id="log-chart-status"></canvas></div></div>
+  </div>
+</div>
+
+</div></div>
+<div class="toast" id="toast"></div>
+<script>
+const M=window.NEXUS_META||{};
+const FIELDS=M.fields||["Field 1","Field 2","Field 3","Field 4","Field 5","Field 6"];
+const ENTITY=toTitle(M.entity_label||"Record");
+const NEXUS_NAME=M.nexus_name||"AIRS Nexus";
+const PODS=M.pods||[];
+const TIER=M.governance_tier||"Standard";
+let noteTab="record",linkedRecordId=null,charts={};
+
+function toTitle(s){if(!s)return"";return s.replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase());}
+function fieldLabel(i){const f=FIELDS[i]||("Field "+(i+1));return toTitle(typeof f==="object"?(f.label||f.name||f.field||"Field"):f);}
+function statusBadge(s){const m={active:"status-active",completed:"status-completed",pending:"status-pending",inactive:"status-inactive"};return `<span class="status-badge ${m[s]||"status-pending"}">${s||"active"}</span>`;}
+function toast(msg,isErr){const t=document.getElementById("toast");t.textContent=msg;t.className="toast show "+(isErr?"err":"ok");setTimeout(()=>t.className="toast",3000);}
+function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+function togglePrivacy(){document.getElementById("privacy-screen").classList.toggle("show");}
+function openDemo(){
+  document.getElementById("demo-nexus-name").textContent=NEXUS_NAME;
+  document.getElementById("demo-tier").textContent=TIER;
+  document.getElementById("demo-desc").textContent=(M.schema_description||("A governed data infrastructure for "+ENTITY.toLowerCase()+" records. Generated by AIRS Studio with the Inference Governance Module at its core."));
+  document.getElementById("demo-fields").innerHTML=FIELDS.map((f,i)=>`<span class="demo-chip">${fieldLabel(i)}</span>`).join("");
+  const pw=document.getElementById("demo-pods-wrap");
+  if(PODS.length){pw.style.display="";document.getElementById("demo-pods").innerHTML=PODS.map(p=>`<span class="demo-chip" style="border-color:rgba(51,224,196,.4);color:var(--teal)">${typeof p==="string"?toTitle(p):toTitle(p.name||p.label||"Pod")}</span>`).join("");}
+  else{pw.style.display="none";}
+  const steps=[["dashboard","Dashboard","Live counts, status breakdown, and governance activity charts for every "+ENTITY.toLowerCase()+" record."],["newrecord","New Record","Intake a new "+ENTITY.toLowerCase()+" across all six governed fields. Every save is IGM-logged."],["records","Records","Search, filter, and open any governed record. Contact logs and documents attach here."],["datalog","Governed Data Log","The audit-grade view &#8212; every record, every contact, every document, timestamped."]];
+  document.getElementById("demo-steps").innerHTML=steps.map((s,i)=>`<button class="demo-step" onclick="closeDemo();showMode(&quot;${s[0]}&quot;)"><span class="demo-step-num">${i+1}</span><span><span class="demo-step-title">${s[1]}</span><br><span class="demo-step-desc">${s[2]}</span></span></button>`).join("");
+  document.getElementById("demo-overlay").classList.add("show");
+  document.getElementById("demo-close-btn").focus();
+}
+function closeDemo(){document.getElementById("demo-overlay").classList.remove("show");const b=document.getElementById("demo-btn");if(b)b.focus();}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDemo();});
+async function runGDI(){
+  const btn=document.getElementById("gdi-run-btn");btn.disabled=true;btn.textContent="Running...";
+  try{
+    const r=await fetch("/api/gdi/analyze",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question: typeof q !== "undefined" ? q : (document.getElementById("live-q")?.value || ""), run_by:"operator"})});
+    const d=await r.json();
+    if(!d.success){toast("GDI error: "+d.error,true);return;}
+    const sev={CRITICAL:"var(--coral)",HIGH:"var(--gold)",MODERATE:"var(--violet)",INFO:"var(--cyan)",PASS:"var(--green)"};
+    document.getElementById("gdi-receipts").textContent=d.receipts.records_scanned+" records / "+d.receipts.rules_executed+" rules / "+d.receipts.tokens_in+" tokens / "+d.receipts.duration_ms+"ms";
+    document.getElementById("gdi-findings").innerHTML=d.findings.map(x=>`<div style="border:1px solid var(--border);border-left:3px solid ${sev[x.severity]||"var(--border2)"};border-radius:10px;padding:14px 16px;margin-bottom:10px;background:#F8FAFC"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:11px;font-weight:800;letter-spacing:.08em;color:${sev[x.severity]};border:1px solid ${sev[x.severity]};padding:2px 8px;border-radius:6px">${x.severity}</span><span style="font-size:14px;font-weight:700;color:var(--text)">${x.title}</span><span style="margin-left:auto;font-size:11px;color:#475569;font-family:'IBM Plex Mono',monospace">${x.rule}</span></div><div style="font-size:13px;color:var(--hd-text);line-height:1.6">${x.description}</div>${x.evidence&&x.evidence.length?`<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px">${x.evidence.map(id=>`<button onclick="openRecord(${id})" style="font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--cyan);background:transparent;border:1px solid var(--border2);border-radius:6px;padding:3px 9px;cursor:pointer">#${id}</button>`).join("")}</div>`:""}</div>`).join("");
+    toast("GDI: "+d.findings.length+" findings, "+d.receipts.tokens_in+" tokens");
+  }catch(e){toast("GDI error: "+e.message,true);}
+  finally{btn.disabled=false;btn.innerHTML="&#9670; Run GDI Analysis";}
+}
+async function loadDemoData(){
+  try{const labels=Array.from({length:12},(_, i)=>i).filter(i=>FIELDS[i]).map(i=>fieldLabel(i));
+    var ah=document.getElementById("askairs-history");if(ah)ah.innerHTML='';
+    const r=await fetch("/api/demo/seed",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:labels})});
+    const d=await r.json();
+    if(!d.success){toast("Seed error: "+d.error,true);return;}
+    if(d.existing){toast("Sample data already loaded ("+d.existing+" records)");}
+    else{toast(d.seeded+" sample records loaded - all synthetic");}
+    closeDemo();showMode("dashboard");
+  }catch(err){toast("Error: "+err.message,true);}
+}
+async function clearDemoData(){
+  try{var ah2=document.getElementById("askairs-history");if(ah2)ah2.innerHTML='';
+  const r=await fetch("/api/demo/clear",{method:"DELETE"});const d=await r.json();
+    if(!d.success){toast("Clear error: "+d.error,true);return;}
+    toast(d.cleared+" sample records cleared");
+    closeDemo();showMode("dashboard");
+  }catch(err){toast("Error: "+err.message,true);}
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  initHome();buildNewRecordForm();buildTableHeaders();showMode("home");
+});
+
+function initHome(){
+  const ne=document.getElementById("home-nexus-name");
+  var gh1=document.getElementById("gdl-h1"),gh2=document.getElementById("gdl-h2"),gh3=document.getElementById("gdl-h3");
+  if(gh1&&FIELDS[0])gh1.textContent=fieldLabel(0);
+  if(gh2&&FIELDS[1])gh2.textContent=fieldLabel(1);
+  if(gh3&&FIELDS[2])gh3.textContent=fieldLabel(2);
+  const ee=document.getElementById("home-entity");
+  const te=document.getElementById("home-tier");
+  if(ne)ne.textContent=NEXUS_NAME;
+  if(ee)ee.textContent=ENTITY+" · Governed Data System · DeBacco Nexus LLC · USPTO 19/571,156";
+  if(te)te.textContent="IGM · "+TIER;
+  const sg=document.getElementById("home-schema-grid");
+  if(sg)sg.innerHTML=FIELDS.map((f,i)=>{
+    var exp=(window.NEXUS_META&&window.NEXUS_META.field_explanations&&window.NEXUS_META.field_explanations[i])||null;
+    var btn=exp?`<button class="field-explain-btn" onclick="showFieldExplain(this,${i})" title="What is this field?">?</button>`:'';
+    return `<div class="schema-card" style="position:relative">${btn}<div class="schema-field-label">Field ${i+1}</div><div class="schema-field-name">${fieldLabel(i)}</div></div>`;
+  }).join("");
+  const pg=document.getElementById("home-pods-grid");
+  if(pg&&PODS.length){
+    const colors={window:"var(--cyan)",room:"var(--teal)",doorway:"var(--gold)",infographic:"var(--violet)",form:"var(--coral)"};
+    pg.innerHTML=PODS.map(p=>{
+      const name=typeof p==="object"?(p.pod_name||p.name||"Pod"):p;
+      const type=typeof p==="object"?(p.pod_type||p.type||"window"):"window";
+      const desc=typeof p==="object"?(p.description||""):"";
+      const color=colors[type]||"var(--cyan)";
+      const route=type==="infographic"?"viz":(type==="doorway"?"datalog":"records");
+      const hint=type==="infographic"?"Opens Governed Viz \u2192":(type==="doorway"?"Opens Governed Data Log \u2192":"Opens Records \u2192");
+      return `<div class="pod-card" onclick="showMode('${route}')" style="border-color:${color}33;cursor:pointer"><div class="pod-type-label" style="color:${color}">${type.toUpperCase()}</div><div class="pod-name">${name}</div><div class="pod-desc">${desc}</div><div style="margin-top:10px;font-size:11px;font-weight:700;color:${color}">${hint}</div></div>`;
+    }).join("");
+  } else if(pg){pg.innerHTML='<div class="empty"><div class="empty-icon">&#9672;</div><div class="empty-text">No pods generated yet</div></div>';}
+  const sal=document.getElementById("stat-active-label");if(sal)sal.textContent="Active "+ENTITY+"s";
+  const dtl=document.getElementById("dashboard-table-title");if(dtl)dtl.innerHTML="Active "+ENTITY+' Records <span class="igm-badge">GOVERNED</span>';
+  const rtl=document.getElementById("records-title");if(rtl)rtl.innerHTML=ENTITY+' Records <span class="igm-badge">GOVERNED</span>';
+  const nrtl=document.getElementById("newrecord-title");if(nrtl)nrtl.innerHTML="New "+ENTITY+' <span class="igm-badge">GOVERNED</span>';
+  const trl=document.getElementById("tab-record-label");if(trl)trl.textContent=ENTITY;
+  const nrs=document.getElementById("note-rec-search");if(nrs)nrs.placeholder="Search to link "+ENTITY.toLowerCase()+"...";
+}
+
+function buildNewRecordForm(){
+  const c=document.getElementById("newrecord-form-fields");
+  if(!c)return;
+  c.innerHTML=FIELDS.map((f,i)=>`<div class="form-group"><label>${fieldLabel(i)}</label><input class="form-input" id="nr-field-${i+1}" placeholder="Enter ${fieldLabel(i)}..."></div>`).join("");
+}
+
+function buildTableHeaders(){
+  const cols=[fieldLabel(0),fieldLabel(1),fieldLabel(2),"Status","Created","Actions"];
+  const html=cols.map(c=>`<th>${c}</th>`).join("");
+  const dt=document.getElementById("dash-thead");const rt=document.getElementById("rec-thead");
+  if(dt)dt.innerHTML=html;if(rt)rt.innerHTML=html;
+}
+
+const VIZ_COLORS = ['#10B981','#3B82F6','#F59E0B','#EF4444','#8B5CF6','#10B981','#8B5CF6','#F59E0B','#3B82F6','#EF4444','#10B981','#8B5CF6'];
+async function renderViz(){
+  const fld = document.getElementById('viz-field').value;
+  const typ = document.getElementById('viz-type').value;
+  const cv = document.getElementById('viz-canvas');
+  const rc = document.getElementById('viz-receipt');
+  cv.innerHTML = '<div style="color:#0F172A;padding:20px">Generating governed chart...</div>'; rc.textContent='';
+  try {
+    const d = await (await fetch('/api/viz/aggregate?field=' + encodeURIComponent(fld))).json();
+    if (!d.success) { cv.innerHTML = '<div style="color:#EF4444;padding:20px">'+(d.error||'error')+'</div>'; return; }
+    if (!d.buckets.length || !d.total) { cv.innerHTML = '<div style="color:#F59E0B;padding:20px">No records yet. Add records, then generate.</div>'; return; }
+    const opt = document.querySelector('#viz-field option[value="'+fld+'"]'); const fldLabel = opt ? opt.textContent : fld;
+    let svg = '';
+    if (typ === 'bar') {
+      const W=700, BH=34, GAP=14, LX=180, max=Math.max(...d.buckets.map(b=>b.n));
+      const H = d.buckets.length*(BH+GAP)+20;
+      svg = '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;max-width:760px" xmlns="http://www.w3.org/2000/svg">';
+      d.buckets.forEach((b,i)=>{
+        const y=i*(BH+GAP)+10, w=Math.max(6,(b.n/max)*(W-LX-90));
+        svg += '<text x="'+(LX-10)+'" y="'+(y+BH/2+5)+'" text-anchor="end" fill="#475569" font-size="13" font-family="sans-serif">'+String(b.label).slice(0,22)+'</text>';
+        svg += '<rect x="'+LX+'" y="'+y+'" width="'+w+'" height="'+BH+'" rx="6" fill="'+VIZ_COLORS[i%12]+'"/>';
+        svg += '<text x="'+(LX+w+10)+'" y="'+(y+BH/2+5)+'" fill="#0F172A" font-size="14" font-weight="700" font-family="sans-serif">'+b.n+'</text>';
+      });
+      svg += '</svg>';
+    } else {
+      const CX=180,CY=170,R=120,IR=66; let a0=-Math.PI/2;
+      svg = '<svg viewBox="0 0 720 340" style="width:100%;max-width:760px" xmlns="http://www.w3.org/2000/svg">';
+      d.buckets.forEach((b,i)=>{
+        const frac=b.n/d.total, a1=a0+frac*2*Math.PI;
+        const x0=CX+R*Math.cos(a0), y0=CY+R*Math.sin(a0), x1=CX+R*Math.cos(a1), y1=CY+R*Math.sin(a1);
+        const xi1=CX+IR*Math.cos(a1), yi1=CY+IR*Math.sin(a1), xi0=CX+IR*Math.cos(a0), yi0=CY+IR*Math.sin(a0);
+        const big=(a1-a0)>Math.PI?1:0;
+        svg += '<path d="M'+x0+' '+y0+' A'+R+' '+R+' 0 '+big+' 1 '+x1+' '+y1+' L'+xi1+' '+yi1+' A'+IR+' '+IR+' 0 '+big+' 0 '+xi0+' '+yi0+' Z" fill="'+VIZ_COLORS[i%12]+'"/>';
+        a0=a1;
+      });
+      svg += '<text x="'+CX+'" y="'+(CY-2)+'" text-anchor="middle" fill="#0F172A" font-size="26" font-weight="800" font-family="sans-serif">'+d.total+'</text>';
+      svg += '<text x="'+CX+'" y="'+(CY+18)+'" text-anchor="middle" fill="#475569" font-size="11" font-family="sans-serif">RECORDS</text>';
+      d.buckets.forEach((b,i)=>{
+        const ly=40+i*24;
+        svg += '<rect x="360" y="'+(ly-11)+'" width="14" height="14" rx="3" fill="'+VIZ_COLORS[i%12]+'"/>';
+        svg += '<text x="382" y="'+ly+'" fill="#0F172A" font-size="13" font-family="sans-serif">'+String(b.label).slice(0,26)+' &middot; '+b.n+' ('+Math.round(b.n/d.total*100)+'%)</text>';
+      });
+      svg += '</svg>';
+    }
+    cv.innerHTML = '<div style="font-size:15px;font-weight:700;color:#3B82F6;margin-bottom:14px">'+fldLabel.toUpperCase()+' &mdash; DISTRIBUTION</div>'+svg;
+    rc.textContent = 'IGM GOVERNED \u2713  '+d.total+' governed records scanned \u00b7 '+d.buckets.length+' categories \u00b7 generated '+new Date(d.generated_at).toLocaleTimeString();
+  } catch(e) { cv.innerHTML = '<div style="color:#EF4444;padding:20px">'+e.message+'</div>'; }
+}
+function loadSchemaSlides(){
+  const container = document.getElementById('slides-container');
+  if(!window.SLIDES_HTML){
+    container.innerHTML = '<div style="color:#666;padding:20px">Schema slides not yet generated. Please refresh.</div>';
+    return;
+  }
+  container.innerHTML = window.SLIDES_HTML;
+}
+
+function showMode(mode){
+  ["home","dashboard","newrecord","records","rawnote","calendar","documents","datalog","gdi","viz","about","askairs","nexuslive","schemas"].forEach(m=>{
+    const el=document.getElementById("mode-"+m);if(el)el.style.display=m===mode?"block":"none";
+  });
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));
+  if(mode==="dashboard")loadDashboard();
+  if(mode==="records")loadRecords();
+  if(mode==="rawnote")loadGovernedNotes();
+  if(mode==="documents")loadDocuments();
+  if(mode==="datalog")loadDataLog();
+  if(mode==="calendar")loadAllCalendar();
+  if(mode==="viz")renderViz();
+  if(mode==="schemas")loadSchemaSlides();
+}
+
+function buildCharts(data){
+  const gridColor="rgba(98,200,255,0.08)";
+  const tickColor="#475569";
+  destroyChart("ts");
+  const tc=document.getElementById("chart-timeseries");
+  if(tc&&data.time_series){charts["ts"]=new Chart(tc,{type:"line",data:{labels:data.time_series.map(r=>r.date?new Date(r.date).toLocaleDateString("en-US",{month:"short",day:"numeric"}):""),datasets:[{label:"Records",data:data.time_series.map(r=>parseInt(r.count)),borderColor:"#2563EB",backgroundColor:"rgba(74,144,217,0.12)",fill:true,tension:0.4,pointBackgroundColor:"#2563EB",pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#475569",font:{size:10}},grid:{color:"rgba(0,40,80,0.06)"}},y:{ticks:{color:"#475569",font:{size:10}},grid:{color:"rgba(0,40,80,0.06)"},beginAtZero:true}}}});}
+  destroyChart("st");
+  const sc=document.getElementById("chart-status");
+  if(sc&&data.status_breakdown&&data.status_breakdown.length){charts["st"]=new Chart(sc,{type:"doughnut",data:{labels:data.status_breakdown.map(r=>toTitle(r.status)),datasets:[{data:data.status_breakdown.map(r=>parseInt(r.count)),backgroundColor:["#059669","#2563EB","#D97706","#FEE2E2","#8B5CF6"],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"right",labels:{color:"#475569",font:{size:11},padding:8}}}}});}
+  destroyChart("fd");
+  const fc=document.getElementById("chart-fields");
+  if(fc&&data.field_distribution&&data.field_distribution.length){charts["fd"]=new Chart(fc,{type:"bar",data:{labels:data.field_distribution.map(r=>r.field_3||"Unknown"),datasets:[{data:data.field_distribution.map(r=>parseInt(r.count)),backgroundColor:"rgba(206,203,246,0.7)",borderColor:"#8B5CF6",borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#475569",font:{size:10}},grid:{color:"rgba(0,40,80,0.06)"}},y:{ticks:{color:"#475569",font:{size:10}},grid:{color:"rgba(0,40,80,0.06)"},beginAtZero:true}}}});}
+  destroyChart("ga");
+  const gc=document.getElementById("chart-governance");
+  if(gc&&data.governance_activity){charts["ga"]=new Chart(gc,{type:"bar",data:{labels:data.governance_activity.map(r=>r.date?new Date(r.date).toLocaleDateString("en-US",{month:"short",day:"numeric"}):""),datasets:[{data:data.governance_activity.map(r=>parseInt(r.count)),backgroundColor:"rgba(60,200,160,0.6)",borderColor:"#059669",borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#475569",font:{size:10}},grid:{color:"rgba(0,40,80,0.06)"}},y:{ticks:{color:"#475569",font:{size:10}},grid:{color:"rgba(0,40,80,0.06)"},beginAtZero:true}}}});}
+}
+
+async function loadDashboard(){
+  try{
+    const search=document.getElementById("dash-search")?.value||"";
+    const status=document.getElementById("dash-status")?.value||"";
+    const p=new URLSearchParams();if(search)p.set("search",search);if(status)p.set("status",status);
+    const[sr,rr]=await Promise.all([fetch("/api/stats"),fetch("/api/records?"+p)]);
+    const stats=await sr.json();const recs=await rr.json();
+    if(stats.success){
+      document.getElementById("stat-active").textContent=stats.stats.active;
+      document.getElementById("stat-completed").textContent=stats.stats.completed;
+      document.getElementById("stat-total").textContent=stats.stats.total;
+      document.getElementById("stat-events").textContent=stats.stats.recent_30_days;
+      if(stats.charts)buildCharts(stats.charts);
+    }
+    if(recs.success){
+      const tb=document.getElementById("dash-tbody");
+      if(!recs.records.length){tb.innerHTML='<tr><td colspan="6"><div class="empty"><div class="empty-icon">&#9672;</div><div class="empty-text">No records yet</div></div></td></tr>';return;}
+      tb.innerHTML=recs.records.map(r=>`<tr onclick="openRecord(${r.id})"><td>${r.field_1||"&#8212;"}</td><td>${r.field_2||"&#8212;"}</td><td>${r.field_3||"&#8212;"}</td><td>${statusBadge(r.status)}</td><td style="color:#475569;font-size:12px">${new Date(r.created_at).toLocaleDateString()}</td><td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openRecord(${r.id})">Open &#8594;</button></td></tr>`).join("");
+    }
+  }catch(err){document.getElementById("dash-tbody").innerHTML=`<tr><td colspan="6" style="color:var(--coral);padding:20px">Error: ${err.message}</td></tr>`;}
+}
+
+async function loadRecords(){
+  try{const r=await fetch("/api/records");const d=await r.json();renderRecordsTable(d.records||[]);}
+  catch(err){document.getElementById("rec-tbody").innerHTML=`<tr><td colspan="6" style="color:var(--coral);padding:20px">Error: ${err.message}</td></tr>`;}
+}
+
+async function searchRecords(){
+  const s=document.getElementById("rec-search")?.value||"";
+  try{const r=await fetch("/api/records?search="+encodeURIComponent(s));const d=await r.json();renderRecordsTable(d.records||[]);}
+  catch(err){toast("Search failed",true);}
+}
+
+function renderRecordsTable(records){
+  const tb=document.getElementById("rec-tbody");
+  if(!records.length){tb.innerHTML='<tr><td colspan="6"><div class="empty"><div class="empty-icon">&#9672;</div><div class="empty-text">No records found</div></div></td></tr>';return;}
+  tb.innerHTML=records.map(r=>`<tr onclick="openRecord(${r.id})"><td>${r.field_1||"&#8212;"}</td><td>${r.field_2||"&#8212;"}</td><td>${r.field_3||"&#8212;"}</td><td>${statusBadge(r.status)}</td><td style="color:#475569;font-size:12px">${new Date(r.created_at).toLocaleDateString()}</td><td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openRecord(${r.id})">Open &#8594;</button></td></tr>`).join("");
+}
+
+async function openRecord(id){
+  try{
+    const r=await fetch("/api/records/"+id);const d=await r.json();if(!d.success){toast("Could not open record: "+(d.error||"unknown"),true);return;}
+    const rec=d.record;showMode("records");const det=document.getElementById("record-detail");det.style.display="block";det.scrollIntoView({behavior:"smooth"});
+    det.innerHTML=`<div class="record-card"><div class="record-header"><div class="record-id">&#9672; ${ENTITY.toUpperCase()} RECORD &#8212; #${rec.id}</div>${statusBadge(rec.status)}</div><div class="record-fields">${FIELDS.map((f,i)=>`<div class="record-field"><div class="record-field-label">${fieldLabel(i)}</div><div class="record-field-value">${rec["field_"+(i+1)]||"&#8212;"}</div></div>`).join("")}</div>${rec.notes?`<div style="padding:16px;border-top:1px solid var(--border)"><div class="record-field-label" style="margin-bottom:6px">Notes</div><div style="font-size:13px;color:var(--hd-text);line-height:1.6">${rec.notes}</div></div>`:""}${d.contacts&&d.contacts.length?`<div style="padding:16px;border-top:1px solid var(--border)"><div class="record-field-label" style="margin-bottom:10px;color:var(--cyan)">&#9742; Contact Log (${d.contacts.length})</div>${d.contacts.map(c=>`<div style="padding:10px 14px;background:#F8FAFC;border:1px solid var(--border);border-radius:8px;margin-bottom:8px"><div style="font-size:12px;font-weight:700;color:var(--cyan)">${c.contact_type||"Contact"} <span style="color:#475569;font-weight:400">&middot; ${new Date(c.created_at).toLocaleDateString()}${c.author?" &middot; "+c.author:""}</span></div><div style="font-size:13px;color:var(--hd-text);margin-top:4px;line-height:1.5">${c.notes||""}</div></div>`).join("")}</div>`:""}${d.documents&&d.documents.length?`<div style="padding:16px;border-top:1px solid var(--border)"><div class="record-field-label" style="margin-bottom:10px;color:var(--violet)">&#128203; Documents (${d.documents.length})</div>${d.documents.map(o=>`<div style="padding:10px 14px;background:#F8FAFC;border:1px solid var(--border);border-radius:8px;margin-bottom:8px"><div style="font-size:12px;font-weight:700;color:var(--violet)">${o.document_type||"Document"} <span style="color:#475569;font-weight:400">&middot; ${o.document_source||""} &middot; ${o.chain_status||""}</span></div></div>`).join("")}</div>`:""}${d.notes&&d.notes.length?`<div style="padding:16px;border-top:1px solid var(--border)"><div class="record-field-label" style="margin-bottom:10px;color:var(--gold)">&#9999; Governed Notes (${d.notes.length})</div>${d.notes.map(n=>`<div style="padding:10px 14px;background:#F8FAFC;border:1px solid var(--border);border-radius:8px;margin-bottom:8px"><div style="font-size:12px;font-weight:700;color:var(--gold)">${n.note_type||"note"} <span style="color:#475569;font-weight:400">&middot; ${new Date(n.created_at).toLocaleDateString()}</span></div><div style="font-size:13px;color:var(--hd-text);margin-top:4px;line-height:1.5">${n.content||""}</div></div>`).join("")}</div>`:""}<div style="padding:14px 16px;border-top:1px solid var(--border);display:flex;gap:10px"><button class="btn btn-ghost btn-sm" onclick="document.getElementById('record-detail').style.display='none'">&#10005; Close</button><button class="btn btn-primary btn-sm" onclick="showMode('rawnote')">&#9999; Add Note</button></div></div>`;
+    det.scrollIntoView({behavior:"smooth"});
+  }catch(err){toast("Error loading record",true);}
+}
+
+let micOn=false,micRec=null;
+async function askLive(){
+    // Setup reference elements for global token headers
+    const tInEl = document.getElementById("header-tokens-in") || document.querySelector(".tokens-in-counter");
+    const tOutEl = document.getElementById("header-tokens-out") || document.querySelector(".tokens-out-counter");
+  const q=document.getElementById("live-q").value.trim();
+  if(!q)return;
+  const a=document.getElementById("live-answer"),rc=document.getElementById("live-receipt");
+  a.style.display="block";a.textContent="Thinking - governed inference running...";rc.style.display="none";
+  try{
+    const r=await fetch("/api/nexus/live",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:q,fields:FIELDS.map(f=>typeof f==="object"?(f.label||f.name||f.field||""):f)})});
+    const d=await r.json();
+    if(!d.success){a.textContent="Error: "+(d.error||"inference failed");return;}
+    a.textContent=d.answer;
+    const x=d.receipt||d.receipts||{};
+        if(tInEl && x.tokens_in) { tInEl.textContent = parseInt(tInEl.textContent || 0) + x.tokens_in;
+          var bd2=document.getElementById('igm-budget-display');
+          if(bd2){var used2=parseInt(tInEl.textContent||0);bd2.textContent=used2+' TOKENS USED';bd2.style.color=used2>500?'#DC2626':used2>250?'#F59E0B':'#059669';}}
+        if(tOutEl && x.tokens_out) { tOutEl.textContent = parseInt(tOutEl.textContent || 0) + x.tokens_out; }
+    rc.style.display="block";
+    rc.textContent="Receipt | records: "+x.records_scanned+" | tokens in/out: "+x.tokens_in+"/"+x.tokens_out+" | RQ: "+x.rq+" | "+x.duration_ms+"ms | "+x.ran_at;
+  }catch(e){a.textContent="Connection failed";}
+}
+let micFinal="";
+function toggleMic(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const st=document.getElementById("mic-status"),btn=document.getElementById("mic-btn");
+  if(!SR){st.textContent="Voice input needs Chrome, Edge, or Safari.";return;}
+  if(micOn){micOn=false;try{micRec.stop();}catch(e){}return;}
+  micFinal="";
+  micRec=new SR();micRec.lang="en-US";micRec.continuous=true;micRec.interimResults=true;
+  micRec.onresult=ev=>{
+    let interim="";
+    for(let i=ev.resultIndex;i<ev.results.length;i++){
+      if(ev.results[i].isFinal)micFinal+=ev.results[i][0].transcript+" ";
+      else interim+=ev.results[i][0].transcript;
+    }
+    document.getElementById("live-q").value=(micFinal+interim).trim();
+  };
+  micRec.onerror=ev=>{if(ev.error!=="no-speech"&&ev.error!=="aborted")st.textContent="Mic error: "+ev.error;};
+  micRec.onend=()=>{
+    if(micOn){try{micRec.start();}catch(e){}return;}
+    btn.style.background="";
+    const t=document.getElementById("live-q").value.trim();
+    if(t){st.textContent="You asked: "+t+" - thinking...";askLive();}
+    else st.textContent="Mic off.";
+  };
+  micOn=true;btn.style.background="rgba(255,133,119,0.4)";st.textContent="Listening - take your time. Tap the mic again when you are finished.";
+  try{micRec.start();}catch(e){st.textContent="Mic failed to start.";micOn=false;}
+}
+/* Patched */ async function saveRecord(){
+    setTimeout(triggerLiveScan, 500);
+  const body={};
+  FIELDS.forEach((f,i)=>{const el=document.getElementById("nr-field-"+(i+1));body["field_"+(i+1)]=el?.value||"";});
+  body.status=document.getElementById("nr-status")?.value||"active";
+  body.notes=document.getElementById("nr-notes")?.value||"";
+  try{
+    const r=await fetch("/api/records",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(d.success){toast(ENTITY+" record saved &#8212; IGM governed &#10003;");FIELDS.forEach((f,i)=>{const el=document.getElementById("nr-field-"+(i+1));if(el)el.value="";});document.getElementById("nr-notes").value="";showMode("records");}
+    else toast("Save failed: "+d.error,true);
+  }catch(err){toast("Error: "+err.message,true);}
+}
+
+function setNoteTab(tab){
+  noteTab=tab;
+  ["record","general","todo"].forEach(t=>document.getElementById("tab-"+t)?.classList.toggle("active",t===tab));
+  const placeholders={record:"Write a governed "+ENTITY.toLowerCase()+" note...",general:"Write a general note...",todo:"Add to-do items &#8212; one per line..."};
+  const a=document.getElementById("note-content");if(a){a.value="";a.placeholder=placeholders[tab]||"";}
+}
+
+async function governNote(){
+  const content=document.getElementById("note-content")?.value?.trim();
+  if(!content){toast("Note is empty",true);return;}
+  try{
+    const r=await fetch("/api/notes",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({record_id:linkedRecordId,note_type:noteTab,content,author:"operator",igm_governed:true})});
+    const d=await r.json();
+    if(d.success){toast("Note governed &#8212; IGM &#10003;");document.getElementById("note-status").textContent="Governed at "+new Date().toLocaleTimeString();document.getElementById("note-content").value="";loadGovernedNotes();}
+    else toast("Failed: "+d.error,true);
+  }catch(err){toast("Error: "+err.message,true);}
+}
+
+async function loadGovernedNotes(){
+  try{
+    const r=await fetch("/api/notes");const d=await r.json();
+    const list=document.getElementById("governed-notes-list");
+    if(!d.success||!d.notes.length){list.innerHTML='<div class="empty"><div class="empty-icon">&#9999;</div><div class="empty-text">No governed notes yet</div></div>';return;}
+    list.innerHTML=d.notes.map(n=>`<div style="background:${n.igm_governed?"rgba(255,202,88,.05)":"var(--bg3)"};border:1px solid ${n.igm_governed?"rgba(255,202,88,.25)":"var(--border)"};border-radius:8px;padding:14px 16px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;font-weight:700;color:${n.igm_governed?"var(--gold)":"var(--text3)"};font-family:'IBM Plex Mono',monospace">${n.igm_governed?"&#9670; GOVERNED":"&#9675; RAW"} &middot; ${(n.note_type||"general").toUpperCase()}</span><span style="font-size:11px;color:#475569">${new Date(n.created_at).toLocaleString()}</span></div><div style="font-size:13px;color:var(--text);line-height:1.6;white-space:pre-wrap">${n.content}</div></div>`).join("");
+  }catch(err){document.getElementById("governed-notes-list").innerHTML=`<div style="color:var(--coral);font-size:13px">Error: ${err.message}</div>`;}
+}
+
+async function loadCalendar(){
+  const date=document.getElementById("cal-date")?.value;
+  const location=document.getElementById("cal-location")?.value;
+  const assigned=document.getElementById("cal-assigned")?.value;
+  const p=new URLSearchParams();if(date)p.set("date",date);if(location)p.set("location",location);if(assigned)p.set("assigned_to",assigned);
+  await fetchCalendar(p);
+}
+async function loadAllCalendar(){await fetchCalendar(new URLSearchParams());}
+async function fetchCalendar(params){
+  try{
+    const r=await fetch("/api/calendar?"+params);const d=await r.json();
+    const c=document.getElementById("cal-events");
+    if(!d.success||!d.events.length){c.innerHTML='<div class="empty"><div class="empty-icon">&#128197;</div><div class="empty-text">No events found</div></div>';return;}
+    c.innerHTML=d.events.map(e=>`<div class="event-row"><div class="event-date">${e.event_date?new Date(e.event_date).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}):"&#8212;"}</div><div style="color:var(--text)">${e.event_type||"&#8212;"}${e.notes?`<br><span style="font-size:11px;color:#475569">${e.notes}</span>`:""}</div><div style="font-size:12px;color:var(--hd-text)">&#128205; ${e.location||"&#8212;"}</div><div style="font-size:12px;color:#475569">&#9673; ${e.assigned_to||"&#8212;"}</div></div>`).join("");
+  }catch(err){document.getElementById("cal-events").innerHTML=`<div style="color:var(--coral);font-size:13px;padding:16px">Error: ${err.message}</div>`;}
+}
+async function addCalendarEvent(){
+  const body={event_date:document.getElementById("new-event-date")?.value,event_type:document.getElementById("new-event-type")?.value,location:document.getElementById("new-event-location")?.value,assigned_to:document.getElementById("new-event-assigned")?.value,notes:document.getElementById("new-event-notes")?.value};
+  if(!body.event_date||!body.event_type){toast("Date and Event Type required",true);return;}
+  try{const r=await fetch("/api/calendar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});const d=await r.json();if(d.success){toast("Event added &#10003;");loadAllCalendar();}else toast("Failed: "+d.error,true);}
+  catch(err){toast("Error: "+err.message,true);}
+}
+
+let docFileData=null;
+function handleDocUpload(event){
+  const file=event.target.files[0];if(!file)return;
+  const zone=document.querySelector(".upload-zone");
+  zone.innerHTML=`<div class="upload-icon">&#10003;</div><div class="upload-text" style="color:var(--teal)">${file.name}</div><div class="upload-sub">${(file.size/1024).toFixed(1)} KB</div>`;
+  docFileData=file;
+}
+async function submitDocument(){
+  var docContent=document.getElementById("doc-content")?.value||"";
+  var docType=document.getElementById("doc-type")?.value||"Report";
+  
+  // If file was uploaded, read its content
+  if(docFileData&&docFileData.text){docContent=docFileData.text;}
+  
+  if(!docContent||docContent.trim().length<10){
+    // No content — store metadata only
+    const body={document_type:docType,document_source:document.getElementById("doc-source")?.value,received_via:document.getElementById("doc-received")?.value,event_date:document.getElementById("doc-date")?.value,assigned_to:document.getElementById("doc-assigned")?.value,extracted_text:docFileData?"Document uploaded: "+docFileData.name:"No content provided"};
+    try{const r=await fetch("/api/documents",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});const d=await r.json();if(d.success){toast("Document archived &#8212; IGM governed &#10003;");loadDocuments();}else toast("Failed: "+d.error,true);}
+    catch(err){toast("Error: "+err.message,true);}
+    return;
+  }
+  
+  // Has content — send to AI extraction
+  toast("AIRS is reading your document...");
+  try{
+    const r=await fetch("/api/documents/extract",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({content:docContent,document_type:docType})});
+    const d=await r.json();
+    if(d.success){
+      var tIn=document.getElementById("header-tokens-in");
+      var tOut=document.getElementById("header-tokens-out");
+      if(tIn&&d.receipt)tIn.textContent=parseInt(tIn.textContent||0)+d.receipt.tokens_in;
+      if(tOut&&d.receipt)tOut.textContent=parseInt(tOut.textContent||0)+d.receipt.tokens_out;
+      toast("Document extracted &#8212; "+d.receipt.tokens_in+" tokens &#8212; IGM governed &#10003;");
+      loadDocuments();
+      if(document.getElementById("doc-content"))document.getElementById("doc-content").value="";
+    }else toast("Extraction failed: "+d.error,true);
+  }catch(err){toast("Error: "+err.message,true);}
+}
+async function loadDocuments(){
+  try{
+    const r=await fetch("/api/documents");const d=await r.json();
+    const list=document.getElementById("doc-archive-list");
+    if(!d.success||!d.documents.length){list.innerHTML='<div class="empty"><div class="empty-icon">&#128203;</div><div class="empty-text">No documents archived yet</div></div>';return;}
+    list.innerHTML=d.documents.map(doc=>`<div style="background:#F8FAFC;border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:8px;display:grid;grid-template-columns:1fr 1fr 1fr 120px;gap:10px;align-items:center"><div><div style="font-size:11px;color:#475569;margin-bottom:2px">TYPE</div><div style="font-size:13px;font-weight:600;color:var(--text)">${doc.document_type||"&#8212;"}</div></div><div><div style="font-size:11px;color:#475569;margin-bottom:2px">SOURCE</div><div style="font-size:13px;color:var(--text)">${doc.document_source||"&#8212;"}</div></div><div><div style="font-size:11px;color:#475569;margin-bottom:2px">ASSIGNED TO</div><div style="font-size:13px;color:var(--text)">${doc.assigned_to||"&#8212;"}</div></div><div style="text-align:right"><span class="status-badge status-active" style="font-size:10px">${doc.chain_status||"submitted"}</span><div style="font-size:10px;color:#475569;margin-top:4px">${new Date(doc.created_at).toLocaleDateString()}</div></div></div>`).join("");
+  }catch(err){document.getElementById("doc-archive-list").innerHTML=`<div style="color:var(--coral);font-size:13px;padding:16px">Error: ${err.message}</div>`;}
+}
+
+async function loadDataLog(){
+  try{
+    const search=document.getElementById("log-search")?.value||"";
+    // Load inference audit trail alongside records
+  const [r, auditR] = await Promise.all([
+    fetch("/api/datalog?search="+encodeURIComponent(search)),
+    fetch("/api/audit?limit=20")
+  ]);
+  const d=await r.json();
+  const auditD = await auditR.json().catch(()=>({success:false,entries:[]}));
+  // Render audit trail if available
+  var auditSection = document.getElementById('igm-audit-trail');
+  if(auditSection && auditD.success && auditD.entries && auditD.entries.length > 0){
+    auditSection.style.display='block';
+    var auditList = document.getElementById('igm-audit-list');
+    if(auditList){
+      auditList.innerHTML = auditD.entries.map(function(e){
+        var color = e.action==='LIVE_INFERENCE'?'#2563EB':e.action==='RECORD_CREATE'?'#059669':'#7C3AED';
+        var detail = e.question ? '<div style="font-size:12px;color:#475569;margin-top:4px;font-style:italic">\"'+e.question.substring(0,80)+'...\"</div>' : '';
+        var receipt = e.tokens_in ? '<span style="font-size:10px;color:#059669;margin-left:8px">'+e.tokens_in+' tokens in · '+e.records_scanned+' records · '+e.duration_ms+'ms</span>' : '';
+        return '<div style="padding:10px 14px;border-bottom:1px solid #F1F5F9">'+
+          '<div style="display:flex;align-items:center;justify-content:space-between">'+
+          '<span style="font-size:11px;font-weight:700;color:'+color+'">'+e.action+'</span>'+
+          '<span style="font-size:10px;color:#94A3B8">'+new Date(e.timestamp).toLocaleString()+'</span>'+
+          '</div>'+
+          '<div style="font-size:11px;color:#475569;margin-top:2px">'+e.tier+' · '+e.actor+receipt+'</div>'+
+          detail+'</div>';
+      }).join('');
+    }
+  } else if(auditSection){
+    auditSection.style.display='none';
+  }
+    const wrap=document.getElementById("log-table-wrap");
+    if(!d.success||!d.records.length){wrap.innerHTML='<div class="empty"><div class="empty-icon">&#9632;</div><div class="empty-text">No governed records yet</div></div>';} 
+    else{wrap.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr 80px 80px 120px;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);margin-bottom:4px">${[(typeof LABELS !== "undefined" && LABELS["field_1"]) || "Field 1", (typeof LABELS !== "undefined" && LABELS["field_2"]) || "Field 2", (typeof LABELS !== "undefined" && LABELS["field_3"]) || "Field 3", "Contacts", "Docs", "Updated"].map(h=>`<div style="font-size:10px;font-weight:700;color:var(--hd-text);letter-spacing:.8px;text-transform:uppercase">${h}</div>`).join("")}</div>${d.records.map(rec=>`<div class="log-row" onclick="openRecord(${rec.id})"><div style="color:var(--text)">${rec.field_1||"&#8212;"}</div><div style="color:var(--hd-text)">${rec.field_2||"&#8212;"}</div><div style="color:var(--hd-text)">${rec.field_3||"&#8212;"}</div><div style="text-align:center;color:var(--cyan);font-family:'IBM Plex Mono',monospace;font-size:12px">${rec.contact_count||0}</div><div style="text-align:center;color:var(--violet);font-family:'IBM Plex Mono',monospace;font-size:12px">${rec.doc_count||0}</div><div style="font-size:11px;color:#475569">${new Date(rec.updated_at).toLocaleDateString()}</div></div>`).join("")}`;}
+    let stats = {};
+    try {
+      const sr = await fetch("/api/stats");
+      stats = await sr.json();
+    } catch(e) { console.log("Stats load deferred:", e); }
+    if(stats && stats.charts){
+      destroyChart("lg");const lgc=document.getElementById("log-chart-gov");
+      if(lgc&&stats.charts.governance_activity){charts["lg"]=new Chart(lgc,{type:"line",data:{labels:stats.charts.governance_activity.map(r=>r.date?new Date(r.date).toLocaleDateString("en-US",{month:"short",day:"numeric"}):""),datasets:[{data:stats.charts.governance_activity.map(r=>parseInt(r.count)),borderColor:"#059669",backgroundColor:"rgba(60,200,160,0.12)",fill:true,tension:0.4,pointBackgroundColor:"#059669",pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#475569",font:{size:10}},grid:{color:"rgba(0,40,80,0.06)"}},y:{ticks:{color:"#475569",font:{size:10}},grid:{color:"rgba(0,40,80,0.06)"},beginAtZero:true}}}});}
+      destroyChart("ls");const lsc=document.getElementById("log-chart-status");
+      if(lsc&&stats.charts.status_breakdown&&stats.charts.status_breakdown.length){charts["ls"]=new Chart(lsc,{type:"pie",data:{labels:stats.charts.status_breakdown.map(r=>toTitle(r.status)),datasets:[{data:stats.charts.status_breakdown.map(r=>parseInt(r.count)),backgroundColor:["#059669","#2563EB","#D97706","#FEE2E2","#8B5CF6"],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"right",labels:{color:"#475569",font:{size:11},padding:8}}}}});}
+    }
+  }catch(err){document.getElementById("log-table-wrap").innerHTML=`<div style="color:var(--coral);font-size:13px;padding:16px">Error: ${err.message}</div>`;}
+}
+</script>
+<div class="demo-watermark">AIRS DEMO — DeBacco Nexus LLC — USPTO Patent Pending 19/571,156 <a href="https://airs-studio-production.up.railway.app">Build your own Nexus →</a></div>
+
+<script>
+// International Mode — Governed Translation
+var currentLang='en';
+function setLanguage(lang){
+  currentLang=lang;
+  // Update voice recognition language
+  if(window._recognition){
+    var langMap={en:'en-US',es:'es-BZ',bzj:'en-BZ',fr:'fr-FR',pt:'pt-BR',zh:'zh-CN',ar:'ar-SA'};
+    window._recognition.lang=langMap[lang]||'en-US';
+  }
+  // Store preference
+  localStorage.setItem('airs-lang',lang);
+  var badge=document.getElementById('lang-badge');
+  if(badge)badge.textContent=lang.toUpperCase();
+  toast('Language set to '+document.querySelector('#lang-select option[value="'+lang+'"]').textContent.split(' ').slice(1).join(' '));
+}
+
+// Override askLive to include language preference
+var _origAskLive=window.askLive;
+if(typeof askLive==='function'){
+  var _origFn=askLive;
+  window.askLive=function(){
+    var q=document.getElementById('live-q');
+    if(q&&currentLang!=='en'){
+      q.value='[Language: '+currentLang+'] '+q.value;
+    }
+    return _origFn.apply(this,arguments);
+  };
+}
+
+// Restore saved language
+var savedLang=localStorage.getItem('airs-lang');
+if(savedLang){currentLang=savedLang;var sel=document.getElementById('lang-select');if(sel)sel.value=savedLang;}
+</script>
+
+<script>
+async function askAIRS(){
+  var q=document.getElementById("askairs-q");
+  var hist=document.getElementById("askairs-history");
+  var question=q.value.trim();
+  if(!question)return;
+  q.value="";
+
+  // Show question
+  hist.innerHTML='<div style="background:#FFFFFF;border:1px solid rgba(0,100,205,.2);border-radius:10px;padding:16px;margin-bottom:8px"><div style="font-size:11px;font-weight:700;color:#2563EB;margin-bottom:6px">YOU ASKED</div><div style="font-size:14px;color:var(--hd-text)">'+question+'</div></div>'+hist.innerHTML;
+
+  // Show thinking
+  var thinkId="think-"+Date.now();
+  hist.innerHTML='<div id="'+thinkId+'" style="background:#FFFFFF;border:1px solid rgba(0,100,205,.1);border-radius:10px;padding:16px"><div style="font-size:11px;font-weight:700;color:#2563EB">AIRS is analyzing your governed records...</div></div>'+hist.innerHTML;
+
+  try{
+    var lang=typeof currentLang!=="undefined"?currentLang:"en";
+    var res=await fetch("/api/nexus/live",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:"[Ask AIRS][Lang:"+lang+"] "+question})});
+    var data=await res.json();
+    var el=document.getElementById(thinkId);
+    if(data.success){
+      var rx=data.receipt||data.receipts||{};
+      var tIn=document.getElementById("header-tokens-in");
+      var tOut=document.getElementById("header-tokens-out");
+      if(tIn&&rx.tokens_in){tIn.textContent=parseInt(tIn.textContent||0)+rx.tokens_in;
+      var bd=document.getElementById('igm-budget-display');
+      if(bd){var used=parseInt(tIn.textContent||0);bd.textContent=used+' TOKENS USED';bd.style.color=used>500?'#DC2626':used>250?'#F59E0B':'#059669';}}
+      if(tOut&&rx.tokens_out)tOut.textContent=parseInt(tOut.textContent||0)+rx.tokens_out;
+      if(el)el.innerHTML='<div style="font-size:11px;font-weight:700;color:#059669;margin-bottom:8px">AIRS INSIGHT <span style="font-weight:400;color:#475569">'+(rx.records_scanned!==undefined?"| "+rx.records_scanned+" records | "+rx.tokens_in+" tokens in | "+rx.duration_ms+"ms":"")+'</span></div><div style="font-size:14px;color:var(--hd-text);line-height:1.7;white-space:pre-wrap">'+data.answer+'</div>';
+    }else{
+      if(el)el.innerHTML='<div style="color:#DC2626;font-size:13px">Error: '+(data.error||"Unknown")+'</div>';
+    }
+  }catch(e){
+    var el2=document.getElementById(thinkId);
+    if(el2)el2.innerHTML='<div style="color:#DC2626;font-size:13px">Connection error: '+e.message+'</div>';
+  }
+}
+</script>
+
+<script>
+var docFileData=null;
+function readDocFile(input){
+  var file=input.files[0];
+  if(!file)return;
+  var status=document.getElementById("doc-file-status");
+  if(file.size>500000){status.textContent="File too large (max 500KB)";return;}
+  var reader=new FileReader();
+  reader.onload=function(e){
+    docFileData={name:file.name,text:e.target.result};
+    var ta=document.getElementById("doc-content");
+    if(ta)ta.value=e.target.result;
+    if(status)status.textContent="Loaded: "+file.name+" ("+Math.round(file.size/1024)+"KB)";
+  };
+  reader.readAsText(file);
+}
+</script>
+
+<script>
+async function uploadAndExtract(){
+  var fileInput=document.getElementById('doc-file-real');
+  var statusEl=document.getElementById('doc-upload-status');
+  var docType=document.getElementById('doc-type')?.value||'Report';
+  
+  if(!fileInput||!fileInput.files[0]){
+    // Try text content fallback
+    var textContent=document.getElementById('doc-content')?.value;
+    if(textContent&&textContent.trim().length>10){
+      statusEl.textContent='Sending text to AIRS...';
+      try{
+        var r=await fetch('/api/documents/extract',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:textContent,document_type:docType})});
+        var d=await r.json();
+        if(d.success){toast('Document extracted — governed');loadDocuments();statusEl.textContent='Extraction complete';}
+        else{statusEl.textContent='Error: '+(d.error||'unknown');toast(d.error,true);}
+      }catch(e){statusEl.textContent='Error: '+e.message;}
+      return;
+    }
+    toast('Please select a file or paste content',true);
+    return;
+  }
+  
+  var file=fileInput.files[0];
+  if(file.size>5*1024*1024){toast('File too large — max 5MB',true);return;}
+  
+  statusEl.textContent='Uploading '+file.name+'...';
+  
+  var formData=new FormData();
+  formData.append('file',file);
+  formData.append('document_type',docType);
+  
+  try{
+    var r=await fetch('/api/documents/upload',{method:'POST',body:formData});
+    var d=await r.json();
+    if(d.success){
+      var tIn=document.getElementById('header-tokens-in');
+      var tOut=document.getElementById('header-tokens-out');
+      if(tIn&&d.receipt&&d.receipt.tokens_in)tIn.textContent=parseInt(tIn.textContent||0)+d.receipt.tokens_in;
+      if(tOut&&d.receipt&&d.receipt.tokens_out)tOut.textContent=parseInt(tOut.textContent||0)+d.receipt.tokens_out;
+      statusEl.textContent='Extracted: '+d.filename+' — governed';
+      toast('Document uploaded and extracted — IGM governed');
+      loadDocuments();
+      fileInput.value='';
+    }else{
+      statusEl.textContent='Error: '+(d.error||'unknown');
+      toast(d.error||'Upload failed',true);
+    }
+  }catch(e){
+    statusEl.textContent='Error: '+e.message;
+    toast('Upload error: '+e.message,true);
+  }
+}
+</script>
+
+<div id="field-explain-popover" class="field-explain-popover" style="display:none">
+  <span class="fep-close" onclick="closeFieldExplain()">&times;</span>
+  <div class="fep-label" style="color:#2563EB">What is this field?</div>
+  <div class="fep-text" id="fep-what"></div>
+  <div class="fep-label" style="color:#059669;margin-top:8px">Why AIRS tracks it</div>
+  <div class="fep-text" id="fep-why"></div>
+  <div class="fep-label" style="color:#92400E;margin-top:8px">Example entry</div>
+  <div class="fep-example" id="fep-example"></div>
+</div>
+
+<script>
+function showFieldExplain(btn, idx){
+  var meta = window.NEXUS_META || {};
+  var explanations = meta.field_explanations || [];
+  var exp = explanations[idx] || {};
+  var fields = meta.fields || [];
+  document.getElementById('fep-what').textContent = exp.what || 'No explanation available for this field.';
+  document.getElementById('fep-why').textContent = exp.why || '';
+  document.getElementById('fep-example').textContent = exp.example ? 'e.g. ' + exp.example : '';
+  var pop = document.getElementById('field-explain-popover');
+  pop.style.display = 'block';
+  // Position near the button
+  var rect = btn.getBoundingClientRect();
+  var top = rect.bottom + 8 + window.scrollY;
+  var left = Math.min(rect.left, window.innerWidth - 340);
+  pop.style.top = top + 'px';
+  pop.style.left = Math.max(8, left) + 'px';
+}
+function closeFieldExplain(){
+  document.getElementById('field-explain-popover').style.display = 'none';
+}
+document.addEventListener('click', function(e){
+  var pop = document.getElementById('field-explain-popover');
+  if(pop && !pop.contains(e.target) && !e.target.classList.contains('field-explain-btn')){
+    pop.style.display = 'none';
+  }
+});
+</script>
+
+<script>
+(function injectFieldExplainButtons(){
+  var cards = document.querySelectorAll('.home-schema-card, [class*="schema-card"], .schema-card');
+  if(!cards || cards.length === 0){
+    // Fallback: find cards by structure — label divs inside the SCHEMA FIELDS section
+    var section = Array.from(document.querySelectorAll('div')).find(function(d){
+      return d.textContent && d.textContent.trim().startsWith('SCHEMA FIELDS');
+    });
+    if(section){
+      var labels = section.querySelectorAll('div[style*="font-weight:700"], strong, b');
+      labels.forEach(function(el, i){
+        if(i < 12 && !el.querySelector('.field-explain-btn')){
+          var btn = document.createElement('button');
+          btn.className = 'field-explain-btn';
+          btn.textContent = '?';
+          btn.title = 'What is this field?';
+          btn.onclick = function(e){ e.stopPropagation(); showFieldExplain(btn, i); };
+          el.appendChild(btn);
+        }
+      });
+    }
+  } else {
+    cards.forEach(function(card, i){
+      if(i < 12 && !card.querySelector('.field-explain-btn')){
+        var btn = document.createElement('button');
+        btn.className = 'field-explain-btn';
+        btn.textContent = '?';
+        btn.title = 'What is this field?';
+        btn.onclick = function(e){ e.stopPropagation(); showFieldExplain(btn, i); };
+        card.appendChild(btn);
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>
